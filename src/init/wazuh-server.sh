@@ -27,7 +27,7 @@ fi
 
 AUTHOR="Wazuh Inc."
 USE_JSON=false
-DAEMONS="wazuh-clusterd wazuh-modulesd wazuh-monitord wazuh-logcollector wazuh-remoted wazuh-syscheckd wazuh-analysisd wazuh-maild wazuh-execd wazuh-db wazuh-authd wazuh-agentlessd wazuh-integratord wazuh-dbd wazuh-csyslogd wazuh-apid"
+DAEMONS="filebeat wazuh-clusterd wazuh-modulesd wazuh-monitord wazuh-logcollector wazuh-remoted wazuh-syscheckd wazuh-analysisd wazuh-maild wazuh-execd wazuh-db wazuh-authd wazuh-agentlessd wazuh-integratord wazuh-dbd wazuh-csyslogd wazuh-apid"
 OP_DAEMONS="wazuh-clusterd wazuh-maild wazuh-agentlessd wazuh-integratord wazuh-dbd wazuh-csyslogd"
 
 # Reverse order of daemons
@@ -236,7 +236,11 @@ testconfig()
 {
     # We first loop to check the config.
     for i in ${SDAEMONS}; do
-        ${DIR}/bin/${i} -t ${DEBUG_CLI};
+        if [ "$i" = "filebeat" ]; then
+            ${DIR}/filebeat/bin/${i} test config -c ${DIR}/filebeat/etc/${i}.yml > /dev/null 2>&1
+        else
+            ${DIR}/bin/${i} -t ${DEBUG_CLI};
+        fi
         if [ $? != 0 ]; then
             if [ $USE_JSON = true ]; then
                 echo -n '{"error":20,"message":"'${i}': Configuration error."}'
@@ -330,10 +334,27 @@ start_service()
             failed=false
             rm -f ${DIR}/var/run/${i}.failed
             touch ${DIR}/var/run/${i}.start
-            if [ $USE_JSON = true ]; then
-                ${DIR}/bin/${i} ${DEBUG_CLI} > /dev/null 2>&1;
+            if [ "$i" = "filebeat" ]; then
+                FILEBEAT_CONFIG_OPTS="-c ${DIR}/filebeat/etc/filebeat.yml"
+                FILEBEAT_PATH_OPTS="--path.home ${DIR}/filebeat --path.config ${DIR}/filebeat/etc --path.data /var/lib/filebeat --path.logs /var/log/filebeat"
+
+                if [ $USE_JSON = true ]; then
+                    ${DIR}/filebeat/bin/${i} ${FILEBEAT_CONFIG_OPTS} ${FILEBEAT_PATH_OPTS} & > /dev/null 2>&1;
+                    filebeat_pid=$!
+
+                else
+                    ${DIR}/filebeat/bin/${i} ${FILEBEAT_CONFIG_OPTS} ${FILEBEAT_PATH_OPTS} & 
+                    filebeat_pid=$!
+                fi
+
+                # Create pid file
+                echo ${filebeat_pid} > ${DIR}/var/run/${i}.pid
             else
-                ${DIR}/bin/${i} ${DEBUG_CLI};
+                if [ $USE_JSON = true ]; then
+                    ${DIR}/bin/${i} ${DEBUG_CLI} > /dev/null 2>&1;
+                else
+                    ${DIR}/bin/${i} ${DEBUG_CLI};
+                fi
             fi
             if [ $? != 0 ]; then
                 failed=true
