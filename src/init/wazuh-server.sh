@@ -335,8 +335,10 @@ start_service()
             rm -f ${DIR}/var/run/${i}.failed
             touch ${DIR}/var/run/${i}.start
             if [ "$i" = "filebeat" ]; then
+                FILEBEAT_DATA_PATH='/var/lib/wazuh-filebeat'
+                FILEBEAT_LOG_PATH='/var/log/wazuh-filebeat'
                 FILEBEAT_CONFIG_OPTS="-c ${DIR}/filebeat/etc/filebeat.yml"
-                FILEBEAT_PATH_OPTS="--path.home ${DIR}/filebeat --path.config ${DIR}/filebeat/etc --path.data /var/lib/filebeat --path.logs /var/log/filebeat"
+                FILEBEAT_PATH_OPTS="--path.home ${DIR}/filebeat --path.config ${DIR}/filebeat/etc --path.data ${FILEBEAT_DATA_PATH} --path.logs ${FILEBEAT_LOG_PATH}"
 
                 if [ $USE_JSON = true ]; then
                     ${DIR}/filebeat/bin/${i} ${FILEBEAT_CONFIG_OPTS} ${FILEBEAT_PATH_OPTS} & > /dev/null 2>&1;
