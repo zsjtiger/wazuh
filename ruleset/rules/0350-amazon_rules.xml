@@ -589,8 +589,20 @@ ID: 80200 - 80499
         <description>AWS S3: POST operation: $(aws.request_uri)</description>
     </rule>
 
+    <!-- Eks rules -->
+    <!-- Audit -->
+    <!-- Grouping Audit events rule -->
+    <rule id="100050" level="0">
+        <decoded_as>json</decoded_as>
+        <field name="apiVersion" type="pcre2">^audit\.k8s\.io\/v\d$</field>
+        <description>AWS Eks Audit event</description>
+    </rule>
+
+    <!-- Authenticator -->
+    <!-- Grouping Authenticator events rule -->
+    <rule id="100150" level="0">
+        <decoded_as>aws-eks-authenticator</decoded_as>
+        <description>AWS Eks Authenticator event</desctiption>
+    </rule>
    
-
-
-
 </group>
