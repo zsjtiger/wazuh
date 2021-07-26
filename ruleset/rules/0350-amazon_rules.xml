@@ -598,6 +598,77 @@ ID: 80200 - 80499
         <description>AWS Eks Audit event</description>
     </rule>
 
+    <!-- Configuration related events -->
+    <rule id="100051" level="2">
+        <if_sid>100050</if_sid>
+        <field name="objectRef.resource" type="pcre2">^configmaps$</field>
+        <description>AWS Eks Audit: Configuration event</description>
+    </rule>
+
+    <!-- Configuration action denied -->
+    <rule id="100052" level="5">
+        <if_sid>100051</if_sid>
+        <field name="responseStatus.status" type="pcre2">^Failure$</field>
+        <description>AWS Eks Audit: Denied configuration action $(verb)</description>
+    </rule>
+
+    <!-- Configuration action allowed -->
+    <rule id="100053" level="3">
+        <if_sid>100051</if_sid>
+        <field name="responseStatus.code" type="pcre2">^200$</field>
+        <description>AWS Eks Audit: Allowed configuration action $(verb)</description>
+    </rule>
+
+    <!-- Changes to resources -->
+    <rule id="100054" level="3">
+        <if_sid>100050</if_sid>
+        <field name="verb" type="pcre2">^(?:patch|update)$</field>
+        <field name="responseStatus.code" type="pcre2">^200$</field>
+        <description>AWS Eks Audit: Resource $(objectRef.resource) modified</description>
+    </rule>
+
+    <!-- New resource -->
+    <rule id="100055" level="2">
+        <if_sid>100050</if_sid>
+        <field name="verb" type="pcre2">^create$</field>
+        <field name="responseStatus.code" type="pcre2">^200$</field>
+        <description>AWS Eks Audit: Resource $(objectRef.resource) created</description>
+    </rule>
+
+    <!-- Deleted resource -->
+    <rule id="100056" level="3">
+        <if_sid>100050</if_sid>
+        <field name="verb" type="pcre2">^delete$</field>
+        <field name="responseStatus.code" type="pcre2">^200$</field>
+        <description>AWS Eks Audit: Resource $(objectRef.resource) deleted</description>
+    </rule>
+
+    <!-- Error response -->
+    <rule id="100090" level="5">
+        <if_sid>100050</if_sid>
+        <field name="responseStatus.code" type="pcre2" negate="yes">^200$</field>
+        <description>AWS Eks Audit Error: $(responseStatus.reason) $(verb) $(objectRef.resource)</description>
+    </rule>
+
+    <!-- Denied actions -->
+    <rule id="100091" level="5">
+        <if_sid>100090</if_sid>
+        <field name="responseStatus.code" type="pcre2">^40[013]$</field>
+        <description>AWS Eks Audit Denied: $(responseStatus.reason) $(verb) $(objectRef.resource)</description>
+    </rule>
+    <rule id="100092" level="5">
+        <if_sid>100090</if_sid>
+        <field name="responseStatus.reason" type="pcre2">^(?:Forbidden|Denied)$</field>
+        <description>AWS Eks Audit Denied: $(responseStatus.reason) $(verb) $(objectRef.resource)</description>
+    </rule>
+        <rule id="100093" level="5">
+        <if_sid>100090</if_sid>
+        <field name="annotations.authorization.k8s.io/decision" type="pcre2">^forbid$</field>
+        <description>AWS Eks Audit Denied: $(responseStatus.reason) $(verb) $(objectRef.resource)</description>
+    </rule>
+
+
+
     <!-- Authenticator -->
     <!-- Grouping Authenticator events rule -->
     <rule id="100150" level="0">
