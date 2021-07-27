@@ -661,7 +661,7 @@ ID: 80200 - 80499
         <field name="responseStatus.reason" type="pcre2">^(?:Forbidden|Denied)$</field>
         <description>AWS Eks Audit Denied: $(responseStatus.reason) $(verb) $(objectRef.resource)</description>
     </rule>
-        <rule id="100093" level="5">
+    <rule id="100093" level="5">
         <if_sid>100090</if_sid>
         <field name="annotations.authorization.k8s.io/decision" type="pcre2">^forbid$</field>
         <description>AWS Eks Audit Denied: $(responseStatus.reason) $(verb) $(objectRef.resource)</description>
@@ -673,33 +673,33 @@ ID: 80200 - 80499
     <!-- Grouping Authenticator events rule -->
     <rule id="100150" level="0">
         <decoded_as>aws-eks-authenticator</decoded_as>
-        <description>AWS Eks Authenticator event</desctiption>
+        <description>AWS Eks Authenticator event</description>
     </rule>
 
     <!-- Authentication events -->
-    <rule id="1000151" level="2">
-        <if_sid>1000150</if_sid>
+    <rule id="100151" level="2">
+        <if_sid>100150</if_sid>
         <field name="path" type="pcre2">\/authenticate</field>
         <description>AWS Eks Authenticator: Authentication event</description>
     </rule>
 
     <!-- User Authentication events -->
-    <rule id="1000152" level="2">
-        <if_sid>1000151</if_sid>
+    <rule id="100152" level="2">
+        <if_sid>100151</if_sid>
         <field name="username" type="pcre2" negate="yes">^system:</field>
         <description>AWS Eks Authenticator: User authentication event</description>
     </rule>
 
     <!-- User Authentication success -->
-    <rule id="1000153" level="3">
-        <if_sid>1000151</if_sid>
+    <rule id="100153" level="3">
+        <if_sid>100151</if_sid>
         <field name="msg" type="pcre2">^access\sgranted$</field>
         <description>AWS Eks Authenticator: User $(username) authenticated</description>
     </rule>
     
     <!-- User Authentication denied -->
-    <rule id="1000154" level="5">
-        <if_sid>1000151</if_sid>
+    <rule id="100154" level="5">
+        <if_sid>100151</if_sid>
         <field name="msg" type="pcre2" negate="yes">^access\sgranted$</field>
         <description>AWS Eks Authenticator: User $(username) authentication failed</description>
     </rule>
