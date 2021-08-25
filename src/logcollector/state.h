@@ -111,6 +111,6 @@ void w_logcollector_state_delete_file(char * fpath);
  * @return cJSON* allocated object with current state.
  * The cJSON* is heap allocated memory that must be freed by the caller using cJSON_Delete.
  */
-cJSON * w_logcollector_state_get();
+char * w_logcollector_state_get(bool formatted);
 
 #endif /* LOGCOLLECTOR_STAT_H */

@@ -44,16 +44,17 @@ size_t lccom_dispatch(char * command, char ** output){
 }
 
 size_t lccom_getstate(char ** output) {
-    cJSON * state_json = NULL;
+    char * state = NULL;
     cJSON * w_packet = cJSON_CreateObject();
-    if (state_json = w_logcollector_state_get(), state_json == NULL) {
+    if (state = w_logcollector_state_get(false), state == NULL) {
         cJSON_AddNumberToObject(w_packet, "error", 1);
         cJSON_AddObjectToObject(w_packet, "data");
         cJSON_AddStringToObject(w_packet, "message", "Statistics unavailable");
         mdebug1("At LCCOM getstate: Statistics unavailable");
     } else {
         cJSON_AddNumberToObject(w_packet, "error", 0);
-        cJSON_AddItemToObject(w_packet, "data", state_json);
+        cJSON_AddRawToObject(w_packet, "data", state);
+        os_free(state);
     }
     *output = cJSON_PrintUnformatted(w_packet);
     cJSON_Delete(w_packet);

@@ -42,7 +42,7 @@ STATIC void w_logcollector_state_generate();
  * @param restart restart counters and date after generating
  * @return cJSON * json decription with state information
  */
-STATIC cJSON * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restart);
+STATIC char * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restart, bool formatted);
 
 /**
  * @brief Update/register current event and byte count for a particular file/location
@@ -104,9 +104,7 @@ void * w_logcollector_state_main(void * args) {
 
 STATIC void w_logcollector_state_dump() {
 
-    cJSON * lc_state_json = w_logcollector_state_get();
-    char * lc_state_str = cJSON_Print(lc_state_json);
-    cJSON_Delete(lc_state_json);
+    char * lc_state_str = w_logcollector_state_get(true);
 
     // Add trailing newline
     const size_t len = strlen(lc_state_str);
@@ -326,12 +324,14 @@ void w_logcollector_state_generate() {
 
     g_lc_json_stats = cJSON_CreateObject();
     if (g_lc_state_type & LC_STATE_GLOBAL) {
-        cJSON * lc_stats_json_global = _w_logcollector_generate_state(g_lc_states_global, false);
-        cJSON_AddItemToObject(g_lc_json_stats, "global", lc_stats_json_global);
+        char * lc_stats_json_global = _w_logcollector_generate_state(g_lc_states_global, false, false);
+        cJSON_AddRawToObject(g_lc_json_stats, "global", lc_stats_json_global);
+        os_free(lc_stats_json_global);
     }
     if (g_lc_state_type & LC_STATE_INTERVAL) {
-        cJSON * lc_stats_json_interval = _w_logcollector_generate_state(g_lc_states_interval, true);
-        cJSON_AddItemToObject(g_lc_json_stats, "interval", lc_stats_json_interval);
+        char * lc_stats_json_interval = _w_logcollector_generate_state(g_lc_states_interval, true, false);
+        cJSON_AddRawToObject(g_lc_json_stats, "interval", lc_stats_json_interval);
+        os_free(lc_stats_json_interval);
     }
 
     w_mutex_unlock(&g_lc_raw_stats_mutex);
@@ -340,27 +340,28 @@ void w_logcollector_state_generate() {
     }
 }
 
-cJSON * w_logcollector_state_get() {
+char * w_logcollector_state_get(bool formatted) {
 
-    cJSON * json_state = NULL;
+    char * state = NULL;
 
     if (g_lc_state_type & LC_STATE_INTERVAL) {
         w_mutex_lock(&g_lc_json_stats_mutex);
         if (g_lc_json_stats != NULL) {
-            json_state = cJSON_Duplicate(g_lc_json_stats, true);
+            state = formatted ? cJSON_Print(g_lc_json_stats) : cJSON_PrintUnformatted(g_lc_json_stats);
         }
         w_mutex_unlock(&g_lc_json_stats_mutex);
     } else if (g_lc_state_type & LC_STATE_GLOBAL) {
         w_mutex_lock(&g_lc_raw_stats_mutex);
-        json_state = _w_logcollector_generate_state(g_lc_states_global, false);
+        state = _w_logcollector_generate_state(g_lc_states_global, false, formatted);
         w_mutex_unlock(&g_lc_raw_stats_mutex);
     }
 
-    return json_state;
+    return state;
 }
 
-cJSON * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restart) {
+char * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restart, bool formatted) {
 
+    char * state_str = NULL;
     OSHashNode * hash_node = NULL;
     unsigned int index = 0;
     struct tm tm = {.tm_sec = 0};
@@ -382,8 +383,8 @@ cJSON * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restar
         w_lc_state_target_t ** target = data->targets;
         while (*target != NULL) {
             cJSON * lc_stats_target = cJSON_CreateObject();
-            cJSON_AddStringToObject(lc_stats_target, "name", (*target)->name);
-            cJSON_AddNumberToObject(lc_stats_target, "drops", (*target)->drops);
+            cJSON_AddItemToObjectCS(lc_stats_target, "name", cJSON_CreateStringReference((*target)->name));
+            cJSON_AddItemToObjectCS(lc_stats_target, "drops", cJSON_CreateNumber((*target)->drops));
             cJSON_AddItemToArray(lc_stats_targets_array, lc_stats_target);
             if (restart) {
                 (*target)->drops = 0;
@@ -393,10 +394,10 @@ cJSON * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restar
 
         // Files
         cJSON * lc_stats_file = cJSON_CreateObject();
-        cJSON_AddStringToObject(lc_stats_file, "location", hash_node->key);
-        cJSON_AddNumberToObject(lc_stats_file, "events", data->events);
-        cJSON_AddNumberToObject(lc_stats_file, "bytes", data->bytes);
-        cJSON_AddItemToObject(lc_stats_file, "targets", lc_stats_targets_array);
+        cJSON_AddItemToObjectCS(lc_stats_file, "location", cJSON_CreateStringReference(hash_node->key));
+        cJSON_AddItemToObjectCS(lc_stats_file, "events", cJSON_CreateNumber(data->events));
+        cJSON_AddItemToObjectCS(lc_stats_file, "bytes", cJSON_CreateNumber(data->bytes));
+        cJSON_AddItemToObjectCS(lc_stats_file, "targets", lc_stats_targets_array);
 
         if (restart) {
             data->bytes = 0;
@@ -409,17 +410,20 @@ cJSON * _w_logcollector_generate_state(w_lc_state_storage_t * state, bool restar
     // Convert timestamp to string
     localtime_r(&state->start, &tm);
     strftime(timestamp_tmp, sizeof(timestamp_tmp), W_LC_STATE_TIME_FORMAT, &tm);
-    cJSON_AddStringToObject(lc_stats_json, "start", timestamp_tmp);
+    cJSON_AddItemToObjectCS(lc_stats_json, "start", cJSON_CreateString(timestamp_tmp));
 
     time_t now = time(NULL);
     localtime_r(&now, &tm);
     strftime(timestamp_tmp, sizeof(timestamp_tmp), W_LC_STATE_TIME_FORMAT, &tm);
-    cJSON_AddStringToObject(lc_stats_json, "end", timestamp_tmp);
+    cJSON_AddItemToObjectCS(lc_stats_json, "end", cJSON_CreateString(timestamp_tmp));
 
-    cJSON_AddItemToObject(lc_stats_json, "files", lc_stats_files_array);
+    cJSON_AddItemToObjectCS(lc_stats_json, "files", lc_stats_files_array);
 
     if (restart) {
         state->start = time(NULL);
     }
-    return lc_stats_json;
+
+    state_str = formatted ? cJSON_Print(lc_stats_json) : cJSON_PrintUnformatted(lc_stats_json);
+    cJSON_Delete(lc_stats_json);
+    return state_str;
 }
