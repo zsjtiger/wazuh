@@ -11,6 +11,8 @@ import re
 import glob
 import subprocess
 from pathlib import Path
+import json
+import jsonschema
 
 
 def printGreen(msg):
@@ -39,6 +41,7 @@ headerDic = {
     'rtr':              '=================== Running RTR checks  ===================',
     'coverage':         '=================== Running Coverage    ===================',
     'AStyle':           '=================== Running AStyle      ===================',
+    'validation':           '=================== Running Validation  ===================',
 }
 
 smokeTestsDic = {
@@ -396,6 +399,36 @@ def configureCMake(moduleName, debugMode, testMode, withAsan):
         raise ValueError(errorString)
 
 
+def runValidation(moduleName):
+    printHeader(moduleName, 'validation')
+    schemasIndexFile = "ci/input/validation.json"
+    schemasDir = "ci/input/validation"
+    with open(schemasIndexFile) as schemaIndex:
+        schemasPaths = json.load(schemaIndex).get(moduleName)
+
+    schemas = {}
+    for name, path in schemasPaths.items():
+        schemas[name] = json.load(open(os.path.join(schemasDir, path)))
+
+    for element in smokeTestsDic[moduleName]:
+        path = os.path.join(currentDirPathBuild(moduleName),
+                            'bin', element['test_tool_name'])
+        args = ' '.join(element['args'])
+        testToolCommand = f'{path} {args}'
+
+    output = json.loads(runTestTool(moduleName, testToolCommand))
+
+    for section, value in output.items():
+        if section in schemas.keys():
+            try:
+                jsonschema.validate(instance=value, schema=schemas.get(section))
+            except jsonschema.ValidationError as ex:
+                printFail('[Validation: FAILED]')
+                errorString = f'Error Running "{section}" Validation: ' + str(ex.message)
+                raise ValueError(errorString)
+    printGreen('[Validation: PASSED]')
+
+
 def runTestTool(moduleName, testToolCommand, isSmokeTest=False):
     printHeader('TESTTOOL', 'testtool')
     printGreen(testToolCommand)
@@ -416,6 +449,7 @@ def runTestTool(moduleName, testToolCommand, isSmokeTest=False):
 
     if out.returncode == 0 and not out.stderr:
         printGreen('[TestTool: PASSED]')
+        return out.stdout
     else:
         print(testToolCommand)
         print(out.stderr)
@@ -535,5 +569,6 @@ def runReadyToReview(moduleName):
     runAStyleCheck(str(moduleName))
     if str(moduleName) != 'shared_modules/utils':
         runASAN(moduleName)
+        runValidation(moduleName)
 
     printGreen(f'<{moduleName}>[RTR: PASSED]<{moduleName}>')
