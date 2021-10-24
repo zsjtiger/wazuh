@@ -562,11 +562,11 @@ int wdb_fim_insert_entry2(wdb_t * wdb, const cJSON * data) {
 
         if (strcmp(item_type + 9, "key") == 0) {
             value_name = NULL;
-            full_path_length = snprintf(NULL, 0, "%s %s:", arch, path_escaped);
+            full_path_length = snprintf(NULL, 0, "%s %s", arch, path_escaped);
 
             os_calloc(full_path_length + 1, sizeof(char), full_path);
 
-            snprintf(full_path, full_path_length + 1, "%s %s:", arch, path_escaped);
+            snprintf(full_path, full_path_length + 1, "%s %s", arch, path_escaped);
         } else if (strcmp(item_type + 9, "value") == 0) {
             char *value_name_escaped_slashes;
             char *value_name_escaped;
@@ -803,7 +803,7 @@ int wdb_fim_clean_old_entries(wdb_t * wdb) {
                 file = (char *)sqlite3_column_text(stmt, 0);
                 date = sqlite3_column_int64(stmt, 13);
                 mdebug2("DB(%s) Cleaning FIM DDBB. Deleting entry '%s' date<tscheck3 '%ld'<'%ld'.", wdb->id, file, date, tscheck3);
-                if(strcmp(file, "internal_options.conf") != 0 && strcmp(file, "ossec.conf") != 0) {
+                if(strcmp(file, "internal_options.conf") != 0 && strcmp(file, "agent.conf") != 0) {
                     if (del_result = wdb_fim_delete(wdb, file), del_result < 0) {
                         mdebug1("DB(%s) Can't delete FIM entry '%s'.", wdb->id, file);
                     }

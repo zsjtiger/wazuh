@@ -220,7 +220,9 @@ size_t wcom_restart(char ** output) {
         char *cmd_parameters = "{\"version\":1,\"origin\":{\"name\":\"\",\"module\":\"wazuh-execd\"},\"command\":\"add\",\"parameters\":{\"extra_args\":[],\"alert\":{},\"program\":\"restart-wazuh.exe\"}}";
         wfd_t *wfd = wpopenv(cmd[0], cmd, W_BIND_STDIN);
         if (wfd) {
-            fwrite(cmd_parameters, 1, strlen(cmd_parameters), wfd->file);
+            /* Send alert to AR script */
+            fprintf(wfd->file_in, "%s\n", cmd_parameters);
+            fflush(wfd->file_in);
             wpclose(wfd);
         } else {
             mterror(WM_EXECD_LOGTAG, "At WCOM restart: Cannot execute restart process");

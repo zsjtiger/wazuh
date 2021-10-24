@@ -10,6 +10,10 @@
 import argparse
 from ci import utils
 
+module_list = ['wazuh_modules/syscollector', 'shared_modules/dbsync', 'shared_modules/rsync', 'shared_modules/utils',
+               'data_provider']
+
+
 class CommandLineParser:
 
     def _argIsValid(self, arg):
@@ -19,16 +23,12 @@ class CommandLineParser:
         :param arg: Argument being selected in the command line.
         :return True is 'arg' is a correct one, False otherwise.
         """
-        ret = False
         validArguments = ['wazuh_modules/syscollector','wazuh_modules/syscollector/',
                           'shared_modules/dbsync','shared_modules/dbsync/',
                           'shared_modules/rsync','shared_modules/rsync/',
                           'shared_modules/utils','shared_modules/utils/',
                           'data_provider','data_provider/']
-        if arg in validArguments:
-            # Available modules so far
-            ret = True
-        return ret
+        return arg in validArguments
 
     def _targetIsValid(self, arg):
         """
@@ -37,14 +37,10 @@ class CommandLineParser:
         :param arg: Argument being selected in the command line.
         :return True is 'arg' is a correct one, False otherwise.
         """
-        ret = False
         validArguments = ['agent',
                           'server',
                           'winagent']
-        if arg in validArguments:
-            # Available modules so far
-            ret = True
-        return ret
+        return arg in validArguments
 
     def processArgs(self):
         """
@@ -65,7 +61,6 @@ class CommandLineParser:
         parser.add_argument("--sformat", help="Run AStyle on the code formatting the needed files. Example: python3 build.py --sformat <data_provider|shared_modules/dbsync|shared_modules/rsync|shared_modules/utils|wazuh_modules/syscollector>")
 
         args = parser.parse_args()
-
         if self._argIsValid(args.readytoreview):
             utils.runReadyToReview(args.readytoreview)
             action = True
@@ -101,6 +96,7 @@ class CommandLineParser:
                 action = True
             if not action:
                 parser.print_help()
+
 
 if __name__ == "__main__":
     cmdLineParser = CommandLineParser()

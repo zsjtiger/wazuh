@@ -263,16 +263,18 @@ void test_rules_initial_load_new_rules(void **state) {
     // First directory will be added
     will_return(__wrap_search_audit_rule, 0);
     will_return(__wrap_audit_add_rule, 15);
+
     snprintf(log_messages[0], OS_SIZE_512, FIM_AUDIT_NEWRULE, ((directory_t *)OSList_GetDataFromIndex(GENERAL_CONFIG, 0))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[0]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[0]);
 
     // Second directory will have the rule already configured
     will_return(__wrap_search_audit_rule, 0);
     will_return(__wrap_audit_add_rule, -EEXIST);
+
     snprintf(log_messages[1], OS_SIZE_512, FIM_AUDIT_ALREADY_ADDED, ((directory_t *)OSList_GetDataFromIndex(GENERAL_CONFIG, 1))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[1]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[1]);
 
     // Third directory will encounter an error
     will_return(__wrap_search_audit_rule, 0);
@@ -283,9 +285,10 @@ void test_rules_initial_load_new_rules(void **state) {
 
     // Fourth directory will be duplicated on the audit_op list
     will_return(__wrap_search_audit_rule, 1);
+
     snprintf(log_messages[3], OS_SIZE_512, FIM_AUDIT_RULEDUP, ((directory_t *)OSList_GetDataFromIndex(GENERAL_CONFIG, 3))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[3]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[3]);
 
     // Fifth directory will encounter an error
     will_return(__wrap_search_audit_rule, -1);
@@ -316,9 +319,10 @@ void test_rules_initial_load_max_audit_entries(void **state) {
     // First directory will be added
     will_return(__wrap_search_audit_rule, 0);
     will_return(__wrap_audit_add_rule, 15);
+
     snprintf(log_messages[0], OS_SIZE_512, FIM_AUDIT_NEWRULE, ((directory_t *)OSList_GetDataFromIndex(GENERAL_CONFIG, 0))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[0]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[0]);
 
     // Second directory will be ignored, since we have room for 1 entry
     snprintf(log_messages[1], OS_SIZE_512, FIM_ERROR_WHODATA_MAXNUM_WATCHES, ((directory_t *)OSList_GetDataFromIndex(GENERAL_CONFIG, 1))->path,
@@ -389,9 +393,10 @@ static void test_fim_audit_reload_rules(void **state) {
     // Second directory will be added to audit
     will_return(__wrap_search_audit_rule, 0);
     will_return(__wrap_audit_add_rule, 15);
+
     snprintf(log_messages[1], OS_SIZE_512, FIM_AUDIT_NEWRULE, ((directory_t *)OSList_GetDataFromIndex(RELOAD_CONFIG, 1))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[1]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[1]);
 
     // Third directory will be removed from audit
     will_return(__wrap_search_audit_rule, 1);
@@ -402,9 +407,10 @@ static void test_fim_audit_reload_rules(void **state) {
 
     // Fourth directory will be a rule that is already added to audit
     will_return(__wrap_search_audit_rule, 1);
+
     snprintf(log_messages[3], OS_SIZE_512, FIM_AUDIT_RULEDUP, ((directory_t *)OSList_GetDataFromIndex(RELOAD_CONFIG, 3))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[3]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[3]);
 
     // Fifth directory will fail to be added
     will_return(__wrap_search_audit_rule, 0);
@@ -416,9 +422,10 @@ static void test_fim_audit_reload_rules(void **state) {
     // Sixth directory will attempt to be added, but find it's duplicated
     will_return(__wrap_search_audit_rule, 0);
     will_return(__wrap_audit_add_rule, -EEXIST);
+
     snprintf(log_messages[5], OS_SIZE_512, FIM_AUDIT_ALREADY_ADDED, ((directory_t *)OSList_GetDataFromIndex(RELOAD_CONFIG, 5))->path);
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, log_messages[5]);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, log_messages[5]);
 
     // Seventh directory will encounter an error when searching the rule
     will_return(__wrap_search_audit_rule, -1);
@@ -470,8 +477,8 @@ static void test_fim_audit_reload_rules_full(void **state) {
             expect_string(__wrap__mterror, formatted_msg, log_messages[i]);
         } else {
             // The rest of them will trigger debug messages
-            expect_string(__wrap__mtdebug1, tag, SYSCHECK_MODULE_TAG);
-            expect_string(__wrap__mtdebug1, formatted_msg, log_messages[i]);
+            expect_string(__wrap__mtdebug2, tag, SYSCHECK_MODULE_TAG);
+            expect_string(__wrap__mtdebug2, formatted_msg, log_messages[i]);
         }
         i++;
     }

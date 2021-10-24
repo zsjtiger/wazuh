@@ -201,6 +201,22 @@ stages:
           total_affected_items: 1
           total_failed_items: 0
 
+  - name: Search (Check injection)
+    request:
+      verify: False
+      <<: *get_agents
+      params:
+        search: "wazuh-agent6' or 'wazuh'='wazuh"
+    response:
+      status_code: 200
+      json:
+        error: !anyint
+        data:
+          affected_items: []
+          failed_items: []
+          total_affected_items: 0
+          total_failed_items: 0
+
   - name: Try to show agents using a search with no return
     request:
       verify: False
@@ -767,6 +783,58 @@ stages:
             - id: '008'
           failed_items: []
           total_affected_items: 4
+          total_failed_items: 0
+
+  - name: Filter agents by query (datetime)
+    request:
+      verify: False
+      <<: *get_agents
+      params:
+        q: dateAdd>2021-07-03 00:00:00;lastKeepAlive>2021-07-02
+    response:
+      status_code: 200
+      json:
+        error: !anyint
+        data:
+          affected_items:
+            - id: '009'
+            - id: '010'
+          failed_items: [ ]
+          total_affected_items: 2
+          total_failed_items: 0
+
+  - name: Filter agents by query (datetime)
+    request:
+      verify: False
+      <<: *get_agents
+      params:
+        q: dateAdd>2021-07-03 00:00:00;dateAdd<2021-07-05 00:00:00
+    response:
+      status_code: 200
+      json:
+        error: !anyint
+        data:
+          affected_items:
+            - id: '009'
+          failed_items: [ ]
+          total_affected_items: 1
+          total_failed_items: 0
+
+  - name: Filter agents by query (datetime)
+    request:
+      verify: False
+      <<: *get_agents
+      params:
+        q: dateAdd>2021-07-07 00:00:00,dateAdd>2021-07-04 00:00:00
+    response:
+      status_code: 200
+      json:
+        error: !anyint
+        data:
+          affected_items:
+            - id: '010'
+          failed_items: [ ]
+          total_affected_items: 1
           total_failed_items: 0
 
   - name: Filter agents by complex query
@@ -1910,6 +1978,9 @@ stages:
 
 ---
 test_name: GET /agents/{agent_id}/stats/{component}
+
+marks:
+  - xfail  # https://github.com/wazuh/wazuh/issues/9665
 
 stages:
 
@@ -3057,7 +3128,7 @@ stages:
       verify: False
       <<: *groups_id_files_request
       params:
-        search: agent.conf
+        search: shared.conf
     response:
       status_code: 200
       json:
@@ -3145,7 +3216,7 @@ stages:
   - name: Try get one file of a group
     request:
       verify: False
-      url: "{protocol:s}://{host:s}:{port:d}/groups/default/files/agent.conf/json"
+      url: "{protocol:s}://{host:s}:{port:d}/groups/default/files/shared.conf/json"
       method: GET
       headers:
         Authorization: "Bearer {test_login_token}"
@@ -3158,7 +3229,7 @@ stages:
   - name: Try get one file of a group, bad group
     request:
       verify: False
-      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_group/files/agent.conf/json"
+      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_group/files/shared.conf/json"
       method: GET
       headers:
         Authorization: "Bearer {test_login_token}"
@@ -3168,7 +3239,7 @@ stages:
   - name: Try get one file of a group, bad group (not aplhanumeric)
     request:
       verify: False
-      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_%_group/files/agent.conf/json"
+      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_%_group/files/shared.conf/json"
       method: GET
       headers:
         Authorization: "Bearer {test_login_token}"
@@ -3185,7 +3256,7 @@ stages:
   - name: Try get one file of a group
     request:
       verify: False
-      url: "{protocol:s}://{host:s}:{port:d}/groups/default/files/agent.conf/xml"
+      url: "{protocol:s}://{host:s}:{port:d}/groups/default/files/shared.conf/xml"
       method: GET
       headers:
         Authorization: "Bearer {test_login_token}"
@@ -3198,7 +3269,7 @@ stages:
   - name: Try get one file of a group, bad group
     request:
       verify: False
-      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_group/files/agent.conf/xml"
+      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_group/files/shared.conf/xml"
       method: GET
       headers:
         Authorization: "Bearer {test_login_token}"
@@ -3208,7 +3279,7 @@ stages:
   - name: Try get one file of a group, bad group (not aplhanumeric)
     request:
       verify: False
-      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_%_group/files/agent.conf/xml"
+      url: "{protocol:s}://{host:s}:{port:d}/groups/wrong_%_group/files/shared.conf/xml"
       method: GET
       headers:
         Authorization: "Bearer {test_login_token}"

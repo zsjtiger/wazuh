@@ -197,6 +197,12 @@ int wm_agent_upgrade_read(__attribute__((unused)) const OS_XML *xml, xml_node **
         }
     } else {
         minfo("WPK verification with CA is disabled.");
+        if (wcom_ca_store) {
+            for (int i = 0; wcom_ca_store[i]; ++i) {
+                os_free(wcom_ca_store[i]);
+            }
+            os_free(wcom_ca_store);
+        }
     }
     #endif
 
@@ -246,8 +252,8 @@ static int wm_agent_upgrade_read_ca_verification_old(unsigned int *verification_
     OS_XML xml2;
 
     /* Read XML file */
-    if (OS_ReadXML(OSSECCONF, &xml2) < 0) {
-        merror_exit(XML_ERROR, OSSECCONF, xml2.err, xml2.err_line);
+    if (OS_ReadXML(WAZUHCONF_AGENT, &xml2) < 0) {
+        merror_exit(XML_ERROR, WAZUHCONF_AGENT, xml2.err, xml2.err_line);
     }
 
     if (ca_verification = OS_GetContents(&xml2, caverify), ca_verification) {

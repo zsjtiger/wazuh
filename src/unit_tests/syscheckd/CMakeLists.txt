@@ -174,7 +174,7 @@ set(RUN_REALTIME_BASE_FLAGS "-Wl,--wrap,inotify_init -Wl,--wrap,inotify_add_watc
                              -Wl,--wrap=OSHash_Begin -Wl,--wrap=OSHash_Next -Wl,--wrap=pthread_mutex_lock \
                              -Wl,--wrap=pthread_mutex_unlock -Wl,--wrap=getpid -Wl,--wrap=atexit -Wl,--wrap=os_random \
                              -Wl,--wrap,inotify_rm_watch -Wl,--wrap,pthread_rwlock_wrlock -Wl,--wrap,pthread_rwlock_unlock \
-                             -Wl,--wrap,pthread_rwlock_rdlock -Wl,--wrap,getDefine_Int")
+                             -Wl,--wrap,pthread_rwlock_rdlock -Wl,--wrap,getDefine_Int -Wl,--wrap,OSHash_Get_Elem_ex")
 
 list(APPEND syscheckd_tests_names "test_run_realtime")
 if(${TARGET} STREQUAL "agent")
@@ -185,8 +185,7 @@ elseif(${TARGET} STREQUAL "winagent")
   # Create event channel tests for run_realtime
   list(APPEND syscheckd_event_tests_names "test_run_realtime_event")
   list(APPEND syscheckd_event_tests_flags "${RUN_REALTIME_BASE_FLAGS} -Wl,--wrap=whodata_audit_start \
-                                           -Wl,--wrap=check_path_type,--wrap=set_winsacl,--wrap=w_directory_exists \
-                                           -Wl,--wrap=OSHash_Get_Elem_ex")
+                                           -Wl,--wrap=check_path_type,--wrap=set_winsacl,--wrap=w_directory_exists")
 else()
   list(APPEND syscheckd_tests_flags "${RUN_REALTIME_BASE_FLAGS}")
 endif()

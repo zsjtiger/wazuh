@@ -184,7 +184,7 @@ int set_winsacl(const char *dir, directory_t *configuration) {
         retval = 0;
         goto end;
     case 1:
-        mtdebug1(SYSCHECK_LOGTAG, FIM_SACL_CHECK_CONFIGURE, dir);
+        mtdebug2(SYSCHECK_LOGTAG, FIM_SACL_CHECK_CONFIGURE, dir);
         configuration->dirs_status.status |= WD_IGNORE_REST;
 
         // Empty SACL
@@ -461,7 +461,7 @@ void restore_sacls() {
             if (security_descriptor) {
                 LocalFree((HLOCAL)security_descriptor);
             }
-            mtdebug1(SYSCHECK_LOGTAG, FIM_SACL_RESTORED, dir_it->path);
+            mtdebug2(SYSCHECK_LOGTAG, FIM_SACL_RESTORED, dir_it->path);
         }
     }
     w_rwlock_unlock(&syscheck.directories_lock);
@@ -772,7 +772,7 @@ unsigned long WINAPI whodata_callback(EVT_SUBSCRIBE_NOTIFY_ACTION action, __attr
                 if (result == 1) {
                     whodata_evt *w_evtdup;
 
-                    mtdebug1(SYSCHECK_LOGTAG, FIM_WHODATA_HANDLE_UPDATE, hash_id);
+                    mtdebug2(SYSCHECK_LOGTAG, FIM_WHODATA_HANDLE_UPDATE, hash_id);
                     if (w_evtdup = OSHash_Delete_ex(syscheck.wdata.fd, hash_id), !w_evtdup) {
                         mterror(SYSCHECK_LOGTAG, FIM_ERROR_WHODATA_HANDLER_REMOVE, hash_id);
                         free_whodata_event(w_evt);
@@ -998,7 +998,7 @@ long unsigned int WINAPI state_checker(__attribute__((unused)) void *_void) {
                     }
                 }
             } else {
-                mtdebug1(SYSCHECK_LOGTAG, FIM_WHODATA_DELETE, dir_it->path);
+                mtdebug2(SYSCHECK_LOGTAG, FIM_WHODATA_DELETE, dir_it->path);
                 d_status->status &= ~WD_STATUS_EXISTS;
                 d_status->object_type = WD_STATUS_UNK_TYPE;
             }

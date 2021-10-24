@@ -52,7 +52,7 @@ void fim_link_check_delete(directory_t *configuration);
 void fim_link_delete_range(const directory_t *configuration);
 void fim_link_silent_scan(char *path, directory_t *configuration);
 void fim_link_reload_broken_link(char *path, directory_t *configuration);
-void fim_delete_realtime_watches(const directory_t *configuration);
+void fim_realtime_delete_watches(const directory_t *configuration);
 #endif
 
 extern time_t last_time;
@@ -1017,8 +1017,8 @@ void test_fim_link_update_already_added(void **state) {
 
     snprintf(error_msg, OS_SIZE_128, FIM_LINK_ALREADY_ADDED, link_path);
 
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, error_msg);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, error_msg);
 
     fim_link_update(link_path, affected_config);
 
@@ -1042,7 +1042,7 @@ void test_fim_link_check_delete(void **state) {
 
     expect_string(__wrap_remove_audit_rule_syscheck, path, affected_config->symbolic_links);
 
-    expect_fim_configuration_directory_call(pointed_folder, NULL);
+    expect_fim_configuration_directory_call("data", NULL);
     fim_link_check_delete(affected_config);
 
     assert_string_equal(affected_config->path, link_path);
@@ -1105,12 +1105,11 @@ void test_fim_delete_realtime_watches(void **state) {
     expect_function_call_any(__wrap_pthread_mutex_lock);
     expect_function_call_any(__wrap_pthread_mutex_unlock);
 
-    expect_fim_configuration_directory_call(pointed_folder, ((directory_t *)OSList_GetDataFromIndex(syscheck.directories, 0)));
-    expect_fim_configuration_directory_call("data", ((directory_t *)OSList_GetDataFromIndex(syscheck.directories, 0)));
+    expect_fim_configuration_directory_call("data", ((directory_t *)OSList_GetDataFromIndex(syscheck.directories, 1)));
 
     will_return(__wrap_inotify_rm_watch, 1);
 
-    fim_delete_realtime_watches(((directory_t *)OSList_GetDataFromIndex(syscheck.directories, 1)));
+    fim_realtime_delete_watches(((directory_t *)OSList_GetDataFromIndex(syscheck.directories, 1)));
 
     assert_null(OSHash_Begin(syscheck.realtime->dirtb, &pos));
 }
@@ -1169,8 +1168,8 @@ void test_fim_link_reload_broken_link_already_monitored(void **state) {
 
     snprintf(error_msg, OS_SIZE_128, FIM_LINK_ALREADY_ADDED, link_path);
 
-    expect_string(__wrap__mtdebug1, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug1, formatted_msg, error_msg);
+    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
+    expect_string(__wrap__mtdebug2, formatted_msg, error_msg);
 
     fim_link_reload_broken_link(link_path, affected_config);
 

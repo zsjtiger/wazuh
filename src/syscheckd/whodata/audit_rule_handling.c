@@ -121,17 +121,17 @@ int fim_rules_initial_load() {
         // The rule is not in audit_rule_list
         case 0:
             if (retval = audit_add_rule(directory, WHODATA_PERMS, AUDIT_KEY), retval > 0) {
-                mtdebug1(SYSCHECK_LOGTAG, FIM_AUDIT_NEWRULE, directory);
+                mtdebug2(SYSCHECK_LOGTAG, FIM_AUDIT_NEWRULE, directory);
                 rules_added++;
             } else if (retval != -EEXIST) {
                 mtwarn(SYSCHECK_LOGTAG, FIM_WARN_WHODATA_ADD_RULE, directory);
             } else {
-                mtdebug1(SYSCHECK_LOGTAG, FIM_AUDIT_ALREADY_ADDED, directory);
+                mtdebug2(SYSCHECK_LOGTAG, FIM_AUDIT_ALREADY_ADDED, directory);
             }
             break;
 
         case 1:
-            mtdebug1(SYSCHECK_LOGTAG, FIM_AUDIT_RULEDUP, directory);
+            mtdebug2(SYSCHECK_LOGTAG, FIM_AUDIT_RULEDUP, directory);
             break;
 
         default:
@@ -188,19 +188,19 @@ void fim_audit_reload_rules() {
                 if (!reported) {
                     mterror(SYSCHECK_LOGTAG, FIM_ERROR_WHODATA_MAXNUM_WATCHES, directory->path, syscheck.max_audit_entries);
                 } else {
-                    mtdebug1(SYSCHECK_LOGTAG, FIM_ERROR_WHODATA_MAXNUM_WATCHES, directory->path, syscheck.max_audit_entries);
+                    mtdebug2(SYSCHECK_LOGTAG, FIM_ERROR_WHODATA_MAXNUM_WATCHES, directory->path, syscheck.max_audit_entries);
                 }
                 reported = 1;
                 break;
             }
 
             if (retval = audit_add_rule(directory->path, WHODATA_PERMS, AUDIT_KEY), retval > 0) {
-                mtdebug1(SYSCHECK_LOGTAG, FIM_AUDIT_NEWRULE, directory->path);
+                mtdebug2(SYSCHECK_LOGTAG, FIM_AUDIT_NEWRULE, directory->path);
                 rules_added++;
             } else if (retval != -EEXIST) {
                 mtdebug1(SYSCHECK_LOGTAG, FIM_WARN_WHODATA_ADD_RULE, directory->path);
             } else {
-                mtdebug1(SYSCHECK_LOGTAG, FIM_AUDIT_ALREADY_ADDED, directory->path);
+                mtdebug2(SYSCHECK_LOGTAG, FIM_AUDIT_ALREADY_ADDED, directory->path);
             }
 
             break;
@@ -214,7 +214,7 @@ void fim_audit_reload_rules() {
                 node = OSList_GetCurrentlyNode(whodata_directories);
                 continue;
             } else {
-                mtdebug1(SYSCHECK_LOGTAG, FIM_AUDIT_RULEDUP, directory->path);
+                mtdebug2(SYSCHECK_LOGTAG, FIM_AUDIT_RULEDUP, directory->path);
             }
             break;
 

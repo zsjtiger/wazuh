@@ -96,7 +96,6 @@ void fim_generate_delete_event(fdb_t *fim_sql,
     w_mutex_unlock(mutex);
 
     if (json_event != NULL) {
-        mtdebug2(SYSCHECK_LOGTAG, FIM_FILE_MSG_DELETE, entry->file_entry.path);
         send_syscheck_msg(json_event);
     }
 
@@ -115,7 +114,6 @@ void fim_delete_file_event(fdb_t *fim_sql,
     configuration = fim_configuration_directory(entry->file_entry.path);
 
     if (configuration == NULL) {
-        mtdebug2(SYSCHECK_LOGTAG, FIM_DELETE_EVENT_PATH_NOCONF, entry->file_entry.path);
         return;
     }
     /* Don't send alert if received mode and mode in configuration aren't the same.
@@ -138,7 +136,9 @@ void fim_delete_file_event(fdb_t *fim_sql,
         break;
     }
 
+
     fim_generate_delete_event(fim_sql, entry, mutex, evt_data, configuration, NULL);
+
 }
 
 
@@ -249,11 +249,7 @@ time_t fim_scan() {
     end_of_scan = time(NULL);
 
     if (syscheck.file_limit_enabled) {
-        mtdebug2(SYSCHECK_LOGTAG, FIM_FILE_LIMIT_VALUE, syscheck.file_limit);
         fim_check_db_state();
-    }
-    else {
-        mtdebug2(SYSCHECK_LOGTAG, FIM_FILE_LIMIT_UNLIMITED);
     }
 
     if (_base_line == 0) {
@@ -262,15 +258,11 @@ time_t fim_scan() {
     else {
         // In the first scan, the fim initialization is different between Linux and Windows.
         // Realtime watches are set after the first scan in Windows.
-        w_mutex_lock(&syscheck.fim_realtime_mutex);
-        if (syscheck.realtime != NULL) {
-            if (syscheck.realtime->queue_overflow) {
-                realtime_sanitize_watch_map();
-                syscheck.realtime->queue_overflow = false;
-            }
-            mtdebug2(SYSCHECK_LOGTAG, FIM_NUM_WATCHES, OSHash_Get_Elem_ex(syscheck.realtime->dirtb));
+        if (fim_realtime_get_queue_overflow()) {
+            fim_realtime_set_queue_overflow(false);
+            realtime_sanitize_watch_map();
         }
-        w_mutex_unlock(&syscheck.fim_realtime_mutex);
+        fim_realtime_print_watches();
     }
 
     mtinfo(SYSCHECK_LOGTAG, FIM_FREQUENCY_ENDED);
@@ -767,7 +759,7 @@ _fim_file(const char *path, const directory_t *configuration, event_data_t *evt_
     }
 
     if (configuration->options & CHECK_SEECHANGES) {
-        diff = fim_file_diff(path);
+        diff = fim_file_diff(path, configuration);
     }
 
     json_event = fim_json_event(&new, saved ? saved->file_entry.data : NULL, configuration, evt_data, diff);
@@ -815,7 +807,7 @@ static cJSON *_fim_file_force_update(const fim_entry *saved,
     evt_data->type = FIM_MODIFICATION; // Checking for changes
 
     if (configuration->options & CHECK_SEECHANGES) {
-        diff = fim_file_diff(new.file_entry.path);
+        diff = fim_file_diff(new.file_entry.path, configuration);
     }
 
     json_event = fim_json_event(&new, saved->file_entry.data, configuration, evt_data, diff);
@@ -854,14 +846,10 @@ void fim_realtime_event(char *file) {
          */
         fim_rt_delay();
 
-        w_rwlock_rdlock(&syscheck.directories_lock);
         fim_checker(file, &evt_data, NULL);
-        w_rwlock_unlock(&syscheck.directories_lock);
     } else {
         // Otherwise, it could be a file deleted or a directory moved (or renamed).
-        w_rwlock_rdlock(&syscheck.directories_lock);
         fim_process_missing_entry(file, FIM_REALTIME, NULL);
-        w_rwlock_unlock(&syscheck.directories_lock);
     }
 }
 
@@ -1731,7 +1719,7 @@ void update_wildcards_config() {
         if (dir_it->is_wildcard && dir_it->is_expanded == 0) {
 #if INOTIFY_ENABLED
             if (FIM_MODE(dir_it->options) == FIM_REALTIME) {
-                fim_delete_realtime_watches(dir_it);
+                fim_realtime_delete_watches(dir_it);
             }
 #endif
 #if ENABLE_AUDIT

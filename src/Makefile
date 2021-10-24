@@ -737,7 +737,7 @@ endif
 winagent: external win32/libwinpthread-1.dll win32/libgcc_s_sjlj-1.dll
 	${MAKE} ${WINDOWS_BINS} CFLAGS="-DCLIENT -D_POSIX_C_SOURCE -DWIN32 -DPSAPI_VERSION=1" LIBS="-lwsock32 -lwevtapi -lshlwapi -lcomctl32 -ladvapi32 -lkernel32 -lpsapi -lgdi32 -liphlpapi -lws2_32 -lcrypt32"
 	${MAKE} ${WINDOWS_ACTIVE_RESPONSES} CFLAGS="-DCLIENT -D_POSIX_C_SOURCE -DWIN32 -DPSAPI_VERSION=1" LIBS="-lwsock32 -lwevtapi -lshlwapi -lcomctl32 -ladvapi32 -lkernel32 -lpsapi -lgdi32 -liphlpapi -lws2_32 -lcrypt32"
-	cd win32/ && ./unix2dos.pl ossec.conf > default-ossec.conf
+	cd win32/ && ./unix2dos.pl agent.conf > default-agent.conf
 	cd win32/ && ./unix2dos.pl help.txt > help_win.txt
 	cd win32/ && ./unix2dos.pl ../../etc/internal_options.conf > internal_options.conf
 	cd win32/ && ./unix2dos.pl ../../etc/local_internal_options-win.conf > default-local_internal_options.conf
@@ -1076,7 +1076,7 @@ TAR := tar -xf
 GUNZIP := gunzip
 GZIP := gzip
 CURL := curl -so
-DEPS_VERSION = 14
+DEPS_VERSION = 15
 RESOURCES_URL := https://packages.wazuh.com/deps/$(DEPS_VERSION)
 CPYTHON := cpython
 PYTHON_SOURCE := no
@@ -1483,7 +1483,7 @@ wazuh_modules/%.o: wazuh_modules/%.c
 
 #### wazuh modules: execd #####
 execd_c := $(wildcard os_execd/*.c)
-execd_o := $(execd_c:.c=.o)
+execd_o := $(execd_c:.c=.o) active-response/active_responses.o
 
 #### wazuh modules: logcollector #####
 logcollector_c := $(wildcard logcollector/*.c)
@@ -1669,10 +1669,13 @@ wazuh-agentlessd: ${os_agentlessd_o}
 	${OSSEC_CCBIN} ${OSSEC_LDFLAGS} $^ ${OSSEC_LIBS} -o $@
 
 
-#### execd ####
+#### os_execd #####
+
+os_execd_c := $(wildcard os_execd/*.c)
+os_execd_o := $(os_execd_c:.c=.o)
+
 os_execd/%.o: os_execd/%.c
 	${OSSEC_CC} ${OSSEC_CFLAGS} -DARGV0=\"wazuh-modulesd\" -c $^ -o $@
-
 
 #### logcollector ####
 
@@ -2179,10 +2182,10 @@ win32_ui_o := $(win32_ui_c:.c=.o)
 win32/ui/%.o: win32/ui/%.c
 	${OSSEC_CC} ${OSSEC_CFLAGS} -UOSSECHIDS -DARGV0=\"wazuh-win32ui\" -c $^ -o $@
 
-win32/wazuh-agent.exe: win32/icon.o win32/win_agent.o win32/win_service.o win32/win_utils.o ${syscheck_o} ${rootcheck_o} $(filter-out wazuh_modules/main.o, ${wmodulesd_o}) $(filter-out client-agent/main.o, $(filter-out client-agent/agentd.o, $(filter-out client-agent/event-forward.o, ${client_agent_o}))) $(filter-out logcollector/main.o, ${logcollector_o}) ${execd_o} monitord/rotate_log.o monitord/compress_log.o
+win32/wazuh-agent.exe: win32/icon.o win32/win_agent.o win32/win_service.o win32/win_utils.o ${syscheck_o} ${rootcheck_o} $(filter-out wazuh_modules/main.o, ${wmodulesd_o}) $(filter-out client-agent/main.o, $(filter-out client-agent/agentd.o, $(filter-out client-agent/event-forward.o, ${client_agent_o}))) $(filter-out logcollector/main.o, ${os_logcollector_o}) ${os_execd_o} active-response/active_responses.o monitord/rotate_log.o monitord/compress_log.o
 	${OSSEC_CCBIN} -DARGV0=\"wazuh-agent\" -DOSSECHIDS ${OSSEC_LDFLAGS} $^ ${OSSEC_LIBS} -o $@
 
-win32/wazuh-agent-eventchannel.exe: win32/icon.o win32/win_agent.o win32/win_service.o win32/win_utils.o $(filter-out syscheckd/main-event.o, ${syscheck_eventchannel_o}) ${rootcheck_o} $(filter-out wazuh_modules/main.o, ${wmodulesd_o}) $(filter-out client-agent/main.o, $(filter-out client-agent/agentd.o, $(filter-out client-agent/event-forward.o, ${client_agent_o}))) $(filter-out logcollector/main-event.o, ${logcollector_eventchannel_o}) ${execd_o} monitord/rotate_log.o monitord/compress_log.o
+win32/wazuh-agent-eventchannel.exe: win32/icon.o win32/win_agent.o win32/win_service.o win32/win_utils.o $(filter-out syscheckd/main-event.o, ${syscheck_eventchannel_o}) ${rootcheck_o} $(filter-out wazuh_modules/main.o, ${wmodulesd_o}) $(filter-out client-agent/main.o, $(filter-out client-agent/agentd.o, $(filter-out client-agent/event-forward.o, ${client_agent_o}))) $(filter-out logcollector/main-event.o, ${os_logcollector_eventchannel_o}) ${os_execd_o} active-response/active_responses.o monitord/rotate_log.o monitord/compress_log.o
 	${OSSEC_CCBIN} -DARGV0=\"wazuh-agent\" -DOSSECHIDS -DEVENTCHANNEL_SUPPORT ${OSSEC_LDFLAGS} $^ ${OSSEC_LIBS} -o $@
 
 win32/manage_agents.exe: win32/win_service_rk.o ${addagent_o}
@@ -2362,13 +2365,12 @@ clean-windows:
 	rm -f win32/help_win.txt
 	rm -f win32/internal_options.conf
 	rm -f win32/default-local_internal_options.conf
-	rm -f win32/default-ossec.conf
+	rm -f win32/default-agent.conf
 	rm -f win32/restart-ossec.cmd
 	rm -f win32/route-null.cmd
 	rm -f win32/route-null-2012.cmd
 	rm -f win32/netsh.cmd
 	rm -f win32/netsh-win-2016.cmd
-	rm -f win32/default-ossec-pre6.conf
 	rm -f win32/restart-wazuh.exe
 	rm -f win32/route-null.exe
 	rm -f win32/netsh.exe
@@ -2381,5 +2383,6 @@ clean-windows:
 	rm -f win32/REVISION
 
 clean-config:
-	rm -f ../etc/ossec.mc
+	rm -f ../etc/wazuh-agent.mc
+	rm -f ../etc/wazuh-manager.mc
 	rm -f Config.OS

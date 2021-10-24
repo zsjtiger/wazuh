@@ -198,7 +198,7 @@ void test_wm_agent_upgrade_validate_system_invalid_platform_darwin(void **state)
 void test_wm_agent_upgrade_validate_system_invalid_platform_solaris(void **state)
 {
     (void) state;
-    char *platform = "solaris";
+    char *platform = "sunos";
     char *os_major = "11";
     char *os_minor = "4";
     char *arch = "x64";
@@ -690,6 +690,19 @@ void test_wm_agent_upgrade_validate_version_upgrade_custom_non_minimal(void **st
     int ret = wm_agent_upgrade_validate_version(wazuh_version, WM_UPGRADE_UPGRADE_CUSTOM, task);
 
     assert_int_equal(ret, WM_UPGRADE_NOT_MINIMAL_VERSION_SUPPORTED);
+}
+
+void test_wm_agent_upgrade_validate_version_breaking_change(void **state)
+{
+    wm_upgrade_task *task = state[1];
+    char *wazuh_version = "v4.2.0";
+
+    os_strdup("v5.0.0", task->custom_version);
+
+    int ret = wm_agent_upgrade_validate_version(wazuh_version, WM_UPGRADE_UPGRADE, task);
+
+    assert_int_equal(ret, WM_UPGRADE_NOT_BREAKING_CHANGE_SUPPORTED);
+    assert_string_equal(task->wpk_version, "v5.0.0");
 }
 
 void test_wm_agent_upgrade_validate_version_upgrade_older_version(void **state)
@@ -1214,6 +1227,7 @@ int main(void) {
         cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_upgrade_custom_ok, setup_validate_wpk_version, teardown_validate_wpk_version),
         cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_upgrade_non_minimal, setup_validate_wpk_version, teardown_validate_wpk_version),
         cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_upgrade_custom_non_minimal, setup_validate_wpk_version, teardown_validate_wpk_version),
+        cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_breaking_change, setup_validate_wpk_version, teardown_validate_wpk_version),
         cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_upgrade_older_version, setup_validate_wpk_version, teardown_validate_wpk_version),
         cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_upgrade_greater_version, setup_validate_wpk_version, teardown_validate_wpk_version),
         cmocka_unit_test_setup_teardown(test_wm_agent_upgrade_validate_version_upgrade_force, setup_validate_wpk_version, teardown_validate_wpk_version),

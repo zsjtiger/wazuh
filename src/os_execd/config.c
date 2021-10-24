@@ -31,8 +31,8 @@ int execd_config() {
     OS_XML xml;
 
     /* Read XML file */
-    if (OS_ReadXML(OSSECCONF, &xml) < 0) {
-        mterror_exit(WM_EXECD_LOGTAG, XML_ERROR, OSSECCONF, xml.err, xml.err_line);
+    if (OS_ReadXML(WAZUHCONF_AGENT, &xml) < 0) {
+        mterror_exit(WM_EXECD_LOGTAG, XML_ERROR, WAZUHCONF_AGENT, xml.err, xml.err_line);
     }
 
     /* We do not validate the xml in here. It is done by other processes. */

@@ -11,15 +11,17 @@ import pytest
 
 with patch('wazuh.core.common.wazuh_uid'):
     with patch('wazuh.core.common.wazuh_gid'):
-        sys.modules['wazuh.rbac.orm'] = MagicMock()
-        import wazuh.rbac.decorators
-        from wazuh.tests.util import RBAC_bypasser
+        with patch('wazuh.core.common.manager_conf',
+                   new=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'manager_base.conf')):
+            sys.modules['wazuh.rbac.orm'] = MagicMock()
+            import wazuh.rbac.decorators
+            from wazuh.tests.util import RBAC_bypasser
 
-        del sys.modules['wazuh.rbac.orm']
-        wazuh.rbac.decorators.expose_resources = RBAC_bypasser
+            del sys.modules['wazuh.rbac.orm']
+            wazuh.rbac.decorators.expose_resources = RBAC_bypasser
 
-        from wazuh.active_response import run_command
-        from wazuh.core.tests.test_active_response import agent_config, agent_info_exception_and_version
+            from wazuh.active_response import run_command
+            from wazuh.core.tests.test_active_response import agent_config, agent_info_exception_and_version
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'etc', 'shared', 'ar.conf')
 full_agent_list = ['000', '001', '002', '003', '004', '005', '006', '007', '008']
@@ -32,7 +34,7 @@ full_agent_list = ['000', '001', '002', '003', '004', '005', '006', '007', '008'
     (1703, None, ['000'], 'restart-wazuh0', [], False, None, 'Wazuh v4.0.0'),
     (1650, None, ['001'], None, [], False, None, 'Wazuh v4.0.0'),
     (1652, None, ['002'], 'random', [], False, None, 'Wazuh v4.0.0'),
-    (None, 1651, ['003'], 'restart-wazuh0', [], False, None, None),
+    (None, 1707, ['003'], 'restart-wazuh0', [], False, None, None),
     (None, 1750, ['004'], 'restart-wazuh0', [], False, None, 'Wazuh v4.0.0'),
     (None, None, ['005'], 'restart-wazuh0', [], False, None, 'Wazuh v4.0.0'),
     (None, None, ['006'], 'custom-ar', [], True, None, 'Wazuh v4.0.0'),

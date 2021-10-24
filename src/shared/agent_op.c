@@ -188,8 +188,8 @@ char *os_read_agent_id()
  *  Description:
  *  Comma separated list of strings that used to identify what type
  *  of configuration is used for this agent.
- *  The profile name is set in the agent's etc/ossec.conf file
- *  It is matched with the ossec manager's agent.conf file to read
+ *  The profile name is set in the agent's etc/agent.conf file
+ *  It is matched with the ossec manager's shared.conf file to read
  *  configuration only applicable to this profile name.
  */
 char *os_read_agent_profile()
@@ -971,7 +971,7 @@ char * get_agent_id_from_name(const char *agent_name) {
 }
 
 /* Connect to the control socket if available */
-#if defined (__linux__) || defined (__MACH__) || defined(sun)
+#if defined (__linux__) || defined (__MACH__) || defined(sun) || defined(FreeBSD) || defined(OpenBSD)
 int control_check_connection() {
     int sock = OS_ConnectUnixDomain(CONTROL_SOCK, SOCK_STREAM, OS_SIZE_128);
 

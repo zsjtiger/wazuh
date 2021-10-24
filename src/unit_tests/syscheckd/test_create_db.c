@@ -2227,8 +2227,6 @@ static void test_fim_scan_db_full_double_scan(void **state) {
 
     will_return(__wrap_readdir, NULL);
 
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
     expect_value(__wrap_fim_db_set_all_unscanned, fim_sql, syscheck.database);
     will_return(__wrap_fim_db_set_all_unscanned, 0);
 
@@ -2304,8 +2302,6 @@ static void test_fim_scan_db_full_not_double_scan(void **state) {
     expect_value(__wrap_fim_db_set_all_unscanned, fim_sql, syscheck.database);
     will_return(__wrap_fim_db_set_all_unscanned, 0);
 
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
     expect_wrapper_fim_db_get_count_entries(syscheck.database, 50000);
 
     expect_string(__wrap__mtinfo, tag, SYSCHECK_LOGTAG);
@@ -2376,9 +2372,6 @@ static void test_fim_scan_realtime_enabled(void **state) {
 
     // fim_scan
     expect_wrapper_fim_db_get_count_entries(syscheck.database, 50000);
-
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
 
     // fim_check_db_state
     expect_wrapper_fim_db_get_count_entries(syscheck.database, 50000);
@@ -2458,8 +2451,6 @@ static void test_fim_scan_db_free(void **state) {
     will_return(__wrap_fim_db_get_not_scanned, NULL);
     will_return(__wrap_fim_db_get_not_scanned, FIMDB_OK);
 
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
 
     expect_wrapper_fim_db_get_count_entries(syscheck.database, 1000);
 
@@ -2531,9 +2522,6 @@ static void test_fim_scan_no_limit(void **state) {
 
     expect_value(__wrap_fim_db_set_all_unscanned, fim_sql, syscheck.database);
     will_return(__wrap_fim_db_set_all_unscanned, 0);
-
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6343): No limit set to maximum number of entries to be monitored");
 
     // In fim_scan
     expect_string(__wrap__mtinfo, tag, SYSCHECK_LOGTAG);
@@ -2614,12 +2602,10 @@ void test_fim_delete_file_event_remove_success(void **state) {
     expect_function_call_any(__wrap_pthread_rwlock_rdlock);
 
     char buffer[OS_SIZE_128] = {0};
+
     expect_fim_db_remove_path(syscheck.database, fim_data->fentry->file_entry.path, FIMDB_OK);
     // inside fim_json_event
     expect_wrapper_fim_db_get_paths_from_inode(syscheck.database, 606060, 12345678, NULL);
-    snprintf(buffer, OS_SIZE_128, FIM_FILE_MSG_DELETE, fim_data->fentry->file_entry.path);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer);
 
     fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
 }
@@ -2651,7 +2637,6 @@ void test_fim_delete_file_event_no_conf(void **state) {
     fim_data->local_data->options = 511;
     strcpy(fim_data->local_data->checksum, "");
 
-    char buffer_msg[OS_SIZE_128] = {0};
     char buffer_config[OS_SIZE_128] = {0};
 
     expect_function_call_any(__wrap_pthread_rwlock_wrlock);
@@ -2660,15 +2645,11 @@ void test_fim_delete_file_event_no_conf(void **state) {
     expect_function_call_any(__wrap_pthread_mutex_unlock);
     expect_function_call_any(__wrap_pthread_rwlock_rdlock);
 
-    snprintf(buffer_msg, OS_SIZE_128, FIM_DELETE_EVENT_PATH_NOCONF, fim_data->fentry->file_entry.path);
     snprintf(buffer_config, OS_SIZE_128, FIM_CONFIGURATION_NOTFOUND, "file", fim_data->fentry->file_entry.path);
 
     // Inside fim_configuration_directory
     expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
     expect_string(__wrap__mtdebug2, formatted_msg, buffer_config);
-
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer_msg);
 
     fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
 }
@@ -2706,12 +2687,10 @@ void test_fim_delete_file_event_different_mode_scheduled(void **state) {
     expect_function_call_any(__wrap_pthread_rwlock_rdlock);
 
     char buffer[OS_SIZE_128] = {0};
+
     expect_fim_db_remove_path(syscheck.database, fim_data->fentry->file_entry.path, FIMDB_OK);
     // inside fim_json_event
     expect_wrapper_fim_db_get_paths_from_inode(syscheck.database, 606060, 12345678, NULL);
-    snprintf(buffer, OS_SIZE_128, FIM_FILE_MSG_DELETE, fim_data->fentry->file_entry.path);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer);
 
     fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
 }
@@ -2822,15 +2801,11 @@ void test_fim_delete_file_event_report_changes(void **state) {
     configuration = fim_configuration_directory(fim_data->fentry->file_entry.path);
     configuration->options |= CHECK_SEECHANGES;
 
-    char buffer[OS_SIZE_128] = {0};
     expect_fim_db_remove_path(syscheck.database, fim_data->fentry->file_entry.path, FIMDB_OK);
     // inside fim_json_event
     expect_wrapper_fim_db_get_paths_from_inode(syscheck.database, 606060, 12345678, NULL);
     expect_fim_diff_process_delete_file(fim_data->fentry->file_entry.path, 0);
 
-    snprintf(buffer, OS_SIZE_128, FIM_FILE_MSG_DELETE, fim_data->fentry->file_entry.path);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer);
 
     fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
 
@@ -3267,8 +3242,6 @@ static void test_fim_scan_db_full_double_scan(void **state) {
 
     prepare_win_double_scan_success(test_file_path, expanded_dirs[0], file, &directory_stat,&file_stat);
 
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
     expect_wrapper_fim_db_get_count_entries(syscheck.database, 50000);
 
     expect_string(__wrap__mtwarn, tag, SYSCHECK_LOGTAG);
@@ -3346,8 +3319,6 @@ static void test_fim_scan_db_full_not_double_scan(void **state) {
     will_return(__wrap_fim_db_set_all_unscanned, 0);
 
     expect_wrapper_fim_db_get_count_entries(syscheck.database, 50000);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
 
     expect_string(__wrap__mtinfo, tag, SYSCHECK_LOGTAG);
     expect_string(__wrap__mtinfo, formatted_msg, FIM_FREQUENCY_ENDED);
@@ -3419,9 +3390,6 @@ static void test_fim_scan_db_free(void **state) {
 
     expect_value(__wrap_fim_db_set_all_unscanned, fim_sql, syscheck.database);
     will_return(__wrap_fim_db_set_all_unscanned, 0);
-
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6342): Maximum number of entries to be monitored: '50000'");
 
     expect_string(__wrap__mtinfo, tag, SYSCHECK_LOGTAG);
     expect_string(__wrap__mtinfo, formatted_msg, "(6038): Sending DB back to normal alert.");
@@ -3496,9 +3464,6 @@ static void test_fim_scan_no_limit(void **state) {
     expect_value(__wrap_fim_db_set_all_unscanned, fim_sql, syscheck.database);
     will_return(__wrap_fim_db_set_all_unscanned, 0);
 
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, "(6343): No limit set to maximum number of entries to be monitored");
-
     expect_string(__wrap__mtinfo, tag, SYSCHECK_LOGTAG);
     expect_string(__wrap__mtinfo, formatted_msg, FIM_FREQUENCY_ENDED);
 
@@ -3551,6 +3516,7 @@ void test_fim_delete_file_event_remove_success(void **state) {
     fim_data_t *fim_data = *state;
     char *path = "%WINDIR%\\System32\\drivers\\etc\\test.exe";
     char expanded_path[OS_MAXSTR];
+
     event_data_t evt_data = { .mode = FIM_SCHEDULED, .report_event = true };
 
     expect_function_call_any(__wrap_pthread_rwlock_wrlock);
@@ -3560,6 +3526,7 @@ void test_fim_delete_file_event_remove_success(void **state) {
     expect_function_call_any(__wrap_pthread_mutex_unlock);
 
     char buffer[OS_SIZE_128] = {0};
+
     if(!ExpandEnvironmentStrings(path, expanded_path, OS_MAXSTR))
         fail();
 
@@ -3586,10 +3553,6 @@ void test_fim_delete_file_event_remove_success(void **state) {
     strcpy(fim_data->local_data->checksum, "");
 
     expect_fim_db_remove_path(syscheck.database, fim_data->fentry->file_entry.path, FIMDB_OK);
-
-    snprintf(buffer, OS_SIZE_128, FIM_FILE_MSG_DELETE, fim_data->fentry->file_entry.path);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer);
 
     fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
 }
@@ -3630,19 +3593,14 @@ void test_fim_delete_file_event_no_conf(void **state) {
     fim_data->local_data->scanned = 123456;
     fim_data->local_data->options = 511;
     strcpy(fim_data->local_data->checksum, "");
-    char buffer_msg[OS_SIZE_128] = {0};
     char buffer_config[OS_SIZE_128] = {0};
 
-    snprintf(buffer_msg, OS_SIZE_128, FIM_DELETE_EVENT_PATH_NOCONF, fim_data->fentry->file_entry.path);
     snprintf(buffer_config, OS_SIZE_128, FIM_CONFIGURATION_NOTFOUND, "file", fim_data->fentry->file_entry.path);
 
     // Inside fim_configuration_directory
     expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
     expect_string(__wrap__mtdebug2, formatted_msg, buffer_config);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer_msg);
-
-    fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
+    expect_string(__wrap__mdebug2, formatted_msg, buffer_config);
 }
 
 void test_fim_delete_file_event_different_mode_scheduled(void **state) {
@@ -3684,10 +3642,6 @@ void test_fim_delete_file_event_different_mode_scheduled(void **state) {
     strcpy(fim_data->local_data->checksum, "");
 
     expect_fim_db_remove_path(syscheck.database, fim_data->fentry->file_entry.path, FIMDB_OK);
-
-    snprintf(buffer, OS_SIZE_128, FIM_FILE_MSG_DELETE, fim_data->fentry->file_entry.path);
-    expect_string(__wrap__mtdebug2, tag, SYSCHECK_LOGTAG);
-    expect_string(__wrap__mtdebug2, formatted_msg, buffer);
 
     fim_delete_file_event(syscheck.database, fim_data->fentry, &syscheck.fim_entry_mutex, &evt_data, NULL, NULL);
 }
@@ -4477,13 +4431,16 @@ static void test_fim_realtime_event_file_exists(void **state) {
     fim_data_t *fim_data = *state;
     struct stat buf = { .st_mode = 0 };
 
-    expect_function_call_any(__wrap_pthread_rwlock_rdlock);
+#ifndef TEST_WINAGENT
     expect_function_call_any(__wrap_pthread_rwlock_wrlock);
     expect_function_call_any(__wrap_pthread_rwlock_unlock);
-#ifndef TEST_WINAGENT
     expect_function_call_any(__wrap_pthread_mutex_lock);
     expect_function_call_any(__wrap_pthread_mutex_unlock);
+    expect_function_call_any(__wrap_pthread_rwlock_rdlock);
 #else
+    expect_function_call_any(__wrap_pthread_rwlock_wrlock);
+    expect_function_call_any(__wrap_pthread_rwlock_unlock);
+    expect_function_call_any(__wrap_pthread_rwlock_rdlock);
     expect_function_call_any(__wrap_pthread_mutex_lock);
     expect_function_call_any(__wrap_pthread_mutex_unlock);
 #endif
@@ -4528,10 +4485,8 @@ static void test_fim_realtime_event_file_exists(void **state) {
 
 static void test_fim_realtime_event_file_missing(void **state) {
 
-    expect_function_call_any(__wrap_pthread_rwlock_rdlock);
     expect_function_call_any(__wrap_pthread_mutex_lock);
     expect_function_call_any(__wrap_pthread_mutex_unlock);
-    expect_function_call_any(__wrap_pthread_rwlock_unlock);
 
     struct stat stat_buf = { .st_mode = 0 };
 #ifdef TEST_WINAGENT

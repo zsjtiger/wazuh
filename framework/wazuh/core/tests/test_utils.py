@@ -264,6 +264,40 @@ def test_process_array(array, filters, limit, search_text, sort_by, expected_ite
     assert result == {'items': expected_items, 'totalItems': len_expected_items}
 
 
+@pytest.mark.parametrize('array, q, expected_items', [
+    ([{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}, {'item': 'value_1',
+                                                                       'datetime': '2018-05-15T12:34:12.544000Z'}],
+     'datetime=2017-10-25T14:48:53.732000Z', [{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}]),
+    ([{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}, {'item': 'value_1',
+                                                                       'datetime': '2018-05-15T12:34:12.544000Z'}],
+     'datetime<2017-10-26', [{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}]),
+    ([{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}, {'item': 'value_1',
+                                                                       'datetime': '2018-05-15T12:34:12.544000Z'}],
+     'datetime>2019-10-26,datetime<2017-10-26', [{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}]),
+    ([{'item': 'value_2', 'datetime': '2017-10-25T14:48:53.732000Z'}, {'item': 'value_1',
+                                                                       'datetime': '2018-05-15T12:34:12.544000Z'}],
+     'datetime>2017-10-26;datetime<2018-05-15T12:34:12.644000Z', [{'item': 'value_1',
+                                                                   'datetime': '2018-05-15T12:34:12.544000Z'}]),
+    ([{'item': 'value_2', 'datetime': '2017-10-25T14:48:53Z'}, {'item': 'value_1', 'datetime': '2018-05-15T12:34:12Z'}],
+     'datetime>2017-10-26;datetime<2018-05-15T12:34:12.001000Z', [{'item': 'value_1',
+                                                                   'datetime': '2018-05-15T12:34:12Z'}]),
+])
+def test_process_array_q(array, q, expected_items):
+    """Check the proper functioning of the q parameter.
+
+    Parameters
+    ----------
+    array : list
+        List of values on which to apply the filter.
+    q : str
+    expected_items : list
+        List of items after applying the filter
+    """
+    result = process_array(array=array, q=q)
+
+    assert result == {'items': expected_items, 'totalItems': len(expected_items)}
+
+
 def test_sort_array_type():
     """Test sort_array function."""
     assert isinstance(sort_array(mock_array, mock_sort_by), list)
@@ -1659,7 +1693,7 @@ def test_delete_file_with_backup_ko(mock_copyfile):
 
 def test_to_relative_path():
     """Test to_relative_path function."""
-    path = 'etc/ossec.conf'
+    path = 'etc/manager.conf'
     assert to_relative_path(join(wazuh_path, path)) == path
 
     assert to_relative_path(path, prefix='etc') == basename(path)

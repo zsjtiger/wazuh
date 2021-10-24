@@ -43,7 +43,7 @@ char *getsharedfiles()
 char *get_agent_ip()
 {
     static char agent_ip[IPSIZE + 1] = { '\0' };
-#if defined (__linux__) || defined (__MACH__) || defined (sun)
+#if defined (__linux__) || defined (__MACH__) || defined (sun) || defined(FreeBSD) || defined(OpenBSD)
     static time_t last_update = 0;
     time_t now = time(NULL);
     int sock;
@@ -171,8 +171,8 @@ void run_notify()
     if(agent_ip && strcmp(agent_ip, "Err")) {
         char label_ip[60];
         snprintf(label_ip, sizeof label_ip, "#\"_agent_ip\":%s", agent_ip);
-        if ((File_DateofChange(AGENTCONFIG) > 0 ) &&
-                (OS_MD5_File(AGENTCONFIG, md5sum, OS_TEXT) == 0)) {
+        if ((File_DateofChange(SHAREDCONFIG) > 0 ) &&
+                (OS_MD5_File(SHAREDCONFIG, md5sum, OS_TEXT) == 0)) {
             snprintf(tmp_msg, OS_MAXSTR - OS_HEADER_SIZE, "#!-%s / %s\n%s%s%s\n",
                     getuname(), md5sum, tmp_labels, shared_files, label_ip);
         } else {
@@ -181,8 +181,8 @@ void run_notify()
         }
     }
     else {
-        if ((File_DateofChange(AGENTCONFIG) > 0 ) &&
-                (OS_MD5_File(AGENTCONFIG, md5sum, OS_TEXT) == 0)) {
+        if ((File_DateofChange(SHAREDCONFIG) > 0 ) &&
+                (OS_MD5_File(SHAREDCONFIG, md5sum, OS_TEXT) == 0)) {
             snprintf(tmp_msg, OS_MAXSTR - OS_HEADER_SIZE, "#!-%s / %s\n%s%s\n",
                     getuname(), md5sum, tmp_labels, shared_files);
         } else {

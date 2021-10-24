@@ -78,18 +78,11 @@ marks:
      vals:
        - alerts
        - auth
-       - cis-cat
        - cluster
        - command
        - global
-       - localfile
-       - osquery
        - remote
-       - rootcheck
        - ruleset
-       - sca
-       - syscheck
-       - syscollector
        - vulnerability-detector
 
 stages:
@@ -148,18 +141,11 @@ stages:
           affected_items:
             - alerts: !anything
               auth: !anything
-              cis-cat: !anything
               cluster: !anything
               command: !anything
               global: !anything
-              localfile: !anything
-              osquery: !anything
               remote: !anything
-              rootcheck: !anything
               ruleset: !anything
-              sca: !anything
-              syscheck: !anything
-              syscollector: !anything
               vulnerability-detector: !anything
           failed_items: []
           total_affected_items: 1
@@ -175,16 +161,16 @@ stages:
       headers:
           Authorization: "Bearer {test_login_token}"
       params:
-        section: rootcheck
-        field: disabled
+        section: alerts
+        field: log_alert_level
     response:
       status_code: 200
       json:
         error: !anyint
         data:
           affected_items:
-            - rootcheck:
-                disabled: !anystr
+            - alerts:
+                log_alert_level: !anything
           failed_items: []
           total_affected_items: 1
           total_failed_items: 0
@@ -198,16 +184,16 @@ stages:
       headers:
           Authorization: "Bearer {test_login_token}"
       params:
-        section: syscheck
-        field: frequency
+        section: global
+        field: logall
     response:
       status_code: 200
       json:
         error: !anyint
         data:
           affected_items:
-            - syscheck:
-                frequency: !anystr
+            - global:
+                logall: !anything
           failed_items: []
           total_affected_items: 1
           total_failed_items: 0
@@ -234,7 +220,7 @@ stages:
       headers:
           Authorization: "Bearer {test_login_token}"
       params:
-        section: syscheck
+        section: vulnerability-detector
         field: invalid_field
     response:
       status_code: 200
@@ -660,6 +646,25 @@ stages:
             key: "level"
             expected_values: "info"
 
+  - name: Filters by query (timestamp<2021-07-01)
+    request:
+      verify: False
+      url: "{protocol:s}://{host:s}:{port:d}/manager/logs"
+      method: GET
+      headers:
+        Authorization: "Bearer {test_login_token}"
+      params:
+        q: timestamp<2021-07-01
+    response:
+      status_code: 200
+      json:
+        error: !anyint
+        data:
+          affected_items: []
+          failed_items: []
+          total_affected_items: 0
+          total_failed_items: 0
+
 ---
 test_name: GET /manager/logs/summary
 
@@ -679,7 +684,6 @@ stages:
         error: !anyint
         data:
           affected_items:
-            - sca: !anything
             - wazuh-agentlessd: !anything
             - wazuh-analysisd: !anything
             - wazuh-authd: !anything
@@ -689,7 +693,6 @@ stages:
             - wazuh-integratord: !anything
             - wazuh-modulesd: !anything
             - wazuh-modulesd:agent-upgrade: !anything
-            - wazuh-modulesd:ciscat: !anything
             - wazuh-modulesd:control: !anything
             - wazuh-modulesd:database: !anything
             - wazuh-modulesd:download: !anything
@@ -1236,6 +1239,21 @@ stages:
                 - 'manager'
           total_affected_items: 0
           total_failed_items: 1
+
+  # PUT /manager/configuration
+  - name: Try to upload an invalid configuration with an invalid content-type
+    request:
+      verify: False
+      url: "{protocol:s}://{host:s}:{port:d}/manager/configuration"
+      method: PUT
+      data: "{invalid_wazuh_conf:s}"
+      headers:
+        Authorization: "Bearer {test_login_token}"
+        content-type: application/json
+    response:
+      status_code: 406
+      json:
+        error: 6002
 
   # GET /manager/configuration/
   - name: Ensure the config didn't change
