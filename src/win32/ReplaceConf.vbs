@@ -2,7 +2,7 @@ On Error Resume Next
 const ForWriting = 2
 const ForReading = 1
 
-home_dir = Replace(args(0), Chr(34), "")
+home_dir = Replace(Wscript.Arguments(0), Chr(34), "")
 
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 

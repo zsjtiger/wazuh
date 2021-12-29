@@ -98,7 +98,7 @@
         <CustomAction Id="SetCustomActionDataValue" Return="check" Property="CustomAction_InstallerScripts" Value="&quot;[APPLICATIONFOLDER]&quot;,&quot;[ADDRESS]&quot;,&quot;[SERVER_PORT]&quot;,&quot;[PROTOCOL]&quot;,&quot;[NOTIFY_TIME]&quot;,&quot;[TIME_RECONNECT]&quot;,&quot;[WAZUH_MANAGER]&quot;,&quot;[WAZUH_MANAGER_PORT]&quot;,&quot;[WAZUH_PROTOCOL]&quot;,&quot;[WAZUH_KEEP_ALIVE_INTERVAL]&quot;,&quot;[WAZUH_TIME_RECONNECT]&quot;" />
         <CustomAction Id="CustomAction_InstallerScripts" BinaryKey="InstallerScripts" VBScriptCall="config" Return="check" Execute="commit" Impersonate="no" />
 
-        <CustomAction Id="ReplaceConfiguration" Directory="APPLICATIONFOLDER" Execute="immediate" ExeCommand="cscript ReplaceConf.vbs &quot;[APPLICATIONFOLDER]&quot;" />
+        <CustomAction Id="ReplaceConfiguration" Directory="APPLICATIONFOLDER" Return="check" Execute="commit" ExeCommand="cscript ReplaceConf.vbs &quot;[APPLICATIONFOLDER]&quot;" />
 
         <CustomAction Id="CustomAction_NoGroup_NoName_RunAuthd" Directory="APPLICATIONFOLDER" Execute="immediate" ExeCommand="[APPLICATIONFOLDER]agent-auth.exe -m [WAZUH_REGISTRATION_SERVER] -p [WAZUH_REGISTRATION_PORT]" />
         <CustomAction Id="CustomAction_NoGroup_NoName_RunAuthd_VerifyAgent" Directory="APPLICATIONFOLDER" Execute="immediate" ExeCommand="[APPLICATIONFOLDER]agent-auth.exe -m [WAZUH_REGISTRATION_SERVER] -p [WAZUH_REGISTRATION_PORT] -k &quot;[WAZUH_REGISTRATION_KEY]&quot; -x &quot;[WAZUH_REGISTRATION_CERTIFICATE]&quot;" />
@@ -202,12 +202,12 @@
             <!-- Install functions -->
             <Custom Action="SetCustomActionDataValue" After="DeleteOssecService">NOT Installed</Custom>
             <Custom Action="CustomAction_InstallerScripts" After="SetCustomActionDataValue">NOT Installed</Custom>
+            <Custom Action="ReplaceConfiguration" After="CustomAction_InstallerScripts">NOT Installed AND NOT WIX_UPGRADE_DETECTED</Custom>
 
             <!-- Stop the service as soon as possible on uninstall, and only on uninstall, in order to unlock the files and folders that must be deleted. -->
             <Custom Action="SetRemoveAllDataValue" Before="InstallFinalize">(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
             <Custom Action="CustomAction_RemoveAllScript" After="SetRemoveAllDataValue">(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
 
-            <Custom Action="ReplaceConfiguration" After="InstallFinalize">NOT Installed AND NOT WIX_UPGRADE_DETECTED</Custom>
 
             <Custom Action="CustomAction_NoGroup_NoName_RunAuthd" After="InstallFinalize">NOT Installed AND WAZUH_REGISTRATION_SERVER &lt;&gt; "" AND WAZUH_AGENT_GROUP = "" AND WAZUH_AGENT_NAME = "" AND WAZUH_REGISTRATION_PASSWORD = "" AND WAZUH_REGISTRATION_CA = "" AND WAZUH_REGISTRATION_CERTIFICATE = "" AND WAZUH_REGISTRATION_KEY = ""</Custom>
             <Custom Action="CustomAction_NoGroup_NoName_RunAuthd_VerifyAgent" After="InstallFinalize">NOT Installed AND WAZUH_REGISTRATION_SERVER &lt;&gt; "" AND WAZUH_AGENT_GROUP = "" AND WAZUH_AGENT_NAME = "" AND WAZUH_REGISTRATION_PASSWORD = "" AND WAZUH_REGISTRATION_CA = "" AND WAZUH_REGISTRATION_CERTIFICATE &lt;&gt; "" AND WAZUH_REGISTRATION_KEY &lt;&gt; ""</Custom>
