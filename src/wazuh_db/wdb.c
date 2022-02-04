@@ -1440,6 +1440,7 @@ sqlite3_stmt * wdb_get_cache_stmt(wdb_t * wdb, char const *query) {
         if (NULL == ret_val) {
             struct stmt_cache_list *new_item = NULL;
             if (NULL == wdb->cache_list) {
+                wdb->stmt_cache_list_size = 0;
                 os_malloc(sizeof(struct stmt_cache_list), wdb->cache_list);
                 new_item = wdb->cache_list;
             } else {
@@ -1467,6 +1468,8 @@ sqlite3_stmt * wdb_get_cache_stmt(wdb_t * wdb, char const *query) {
                     node_stmt->next = NULL;
                 }
             } else {
+                wdb->stmt_cache_list_size++;
+                minfo("New statement cached(%i): %s",wdb->stmt_cache_list_size, query);
                 ret_val = new_item->value.stmt;
             }
         }

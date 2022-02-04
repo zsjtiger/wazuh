@@ -289,6 +289,7 @@ typedef struct wdb_t {
     time_t transaction_begin_time;
     pthread_mutex_t mutex;
     struct stmt_cache_list *cache_list;
+    int stmt_cache_list_size;
     struct wdb_t * next;
 } wdb_t;
 
