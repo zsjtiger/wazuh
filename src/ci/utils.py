@@ -10,6 +10,7 @@ Foundation.
 import json
 import os
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from ci import build_tools
 
@@ -267,7 +268,7 @@ def printFail(msg):
     Raises:
         - None
     """
-    print("\033[91m {} \033[0m".format(msg))
+    print("\033[91m {} {} \033[0m".format(datetime.now(), msg))
 
 
 def printGreen(msg, module=""):
@@ -288,7 +289,7 @@ def printGreen(msg, module=""):
         formatMsg = msg
     else:
         formatMsg = "<{0}>{1}<{0}>".format(module, msg)
-    print("\033[92m {} \033[0m".format(formatMsg))
+    print("\033[92m {} {} \033[0m".format( datetime.now(),formatMsg))
 
 
 def printHeader(moduleName, headerKey):
@@ -306,7 +307,7 @@ def printHeader(moduleName, headerKey):
         - None
     """
     msg = "<{0}>{1}<{0}>".format(moduleName, HEADER_DIR[headerKey])
-    print("\033[95m {} \033[0m".format(msg))
+    print("\033[95m {} {} \033[0m".format(datetime.now(), msg))
 
 
 def printInfo(msg):
@@ -322,7 +323,7 @@ def printInfo(msg):
     Raises:
         - None
     """
-    print("\033[1;33m {} \033[0m".format(msg))
+    print("\033[1;33m {} {} \033[0m".format(datetime.now(), msg))
 
 
 def printSubHeader(moduleName, headerKey):
@@ -340,7 +341,7 @@ def printSubHeader(moduleName, headerKey):
         - None
     """
     msg = "<{0}>{1}<{0}>".format(moduleName, HEADER_DIR[headerKey])
-    print("\033[;36m {}".format(msg))
+    print("\033 {} [;36m {}".format(datetime.now(), msg))
 
 
 def readJSONFile(jsonFilePath):
