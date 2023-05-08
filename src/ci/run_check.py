@@ -511,7 +511,7 @@ def runTestToolForWindows(moduleName, testToolConfig):
         path = os.path.join(rootPath, element['test_tool_name'])
         args = " ".join(element['args'])
         testToolCommand = "WINEPATH=\"/usr/i686-w64-mingw32/lib;{}\" \
-                           WINEARCH=win64 /usr/bin/wine {}.exe {}"\
+                           /usr/bin/wine {}.exe {}"\
                            .format(utils.rootPath(), path, args)
         runTestTool(moduleName=moduleName,
                     testToolCommand=testToolCommand,
@@ -576,7 +576,7 @@ def runTests(moduleName):
 
                 command = f'WINEPATH="/usr/i686-w64-mingw32/lib;\
                             {utils.currentPath()}" \
-                            WINEARCH=win64 /usr/bin/wine {path}'
+                            /usr/bin/wine {path}'
             else:
                 command = path
             out = subprocess.run(command,
