@@ -9,6 +9,7 @@ Foundation
 """
 
 import argparse
+import sys
 from ci import build_tools
 from ci import run_check
 from ci import utils
@@ -158,4 +159,6 @@ def processArgs():
 
 
 if __name__ == "__main__":
+    print("Name: ", type(sys.stdout.buffer).__name__, flush=True)
+    print("TTY? ", sys.stdout.buffer.isatty(), flush=True)
     processArgs()
