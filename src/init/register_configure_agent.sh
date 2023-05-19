@@ -166,58 +166,58 @@ get_deprecated_vars () {
 }
 
 set_vars () {
-
-    export WAZUH_MANAGER
-    export WAZUH_MANAGER_PORT
-    export WAZUH_PROTOCOL
-    export WAZUH_REGISTRATION_SERVER
-    export WAZUH_REGISTRATION_PORT
-    export WAZUH_REGISTRATION_PASSWORD
-    export WAZUH_KEEP_ALIVE_INTERVAL
-    export WAZUH_TIME_RECONNECT
-    export WAZUH_REGISTRATION_CA
-    export WAZUH_REGISTRATION_CERTIFICATE
-    export WAZUH_REGISTRATION_KEY
-    export WAZUH_AGENT_NAME
-    export WAZUH_AGENT_GROUP
-    export ENROLLMENT_DELAY
-
-    WAZUH_MANAGER=$(launchctl getenv WAZUH_MANAGER)
-    WAZUH_MANAGER_PORT=$(launchctl getenv WAZUH_MANAGER_PORT)
-    WAZUH_PROTOCOL=$(launchctl getenv WAZUH_PROTOCOL)
-    WAZUH_REGISTRATION_SERVER=$(launchctl getenv WAZUH_REGISTRATION_SERVER)
-    WAZUH_REGISTRATION_PORT=$(launchctl getenv WAZUH_REGISTRATION_PORT)
-    WAZUH_REGISTRATION_PASSWORD=$(launchctl getenv WAZUH_REGISTRATION_PASSWORD)
-    WAZUH_KEEP_ALIVE_INTERVAL=$(launchctl getenv WAZUH_KEEP_ALIVE_INTERVAL)
-    WAZUH_TIME_RECONNECT=$(launchctl getenv WAZUH_TIME_RECONNECT)
-    WAZUH_REGISTRATION_CA=$(launchctl getenv WAZUH_REGISTRATION_CA)
-    WAZUH_REGISTRATION_CERTIFICATE=$(launchctl getenv WAZUH_REGISTRATION_CERTIFICATE)
-    WAZUH_REGISTRATION_KEY=$(launchctl getenv WAZUH_REGISTRATION_KEY)
-    WAZUH_AGENT_NAME=$(launchctl getenv WAZUH_AGENT_NAME)
-    WAZUH_AGENT_GROUP=$(launchctl getenv WAZUH_AGENT_GROUP)
-    ENROLLMENT_DELAY=$(launchctl getenv ENROLLMENT_DELAY)
-
-    # The following variables are yet supported but all of them are deprecated
-    export WAZUH_MANAGER_IP
-    export WAZUH_NOTIFY_TIME
-    export WAZUH_AUTHD_SERVER
-    export WAZUH_AUTHD_PORT
-    export WAZUH_PASSWORD
-    export WAZUH_GROUP
-    export WAZUH_CERTIFICATE
-    export WAZUH_KEY
-    export WAZUH_PEM
-
-    WAZUH_MANAGER_IP=$(launchctl getenv WAZUH_MANAGER_IP)
-    WAZUH_NOTIFY_TIME=$(launchctl getenv WAZUH_NOTIFY_TIME)
-    WAZUH_AUTHD_SERVER=$(launchctl getenv WAZUH_AUTHD_SERVER)
-    WAZUH_AUTHD_PORT=$(launchctl getenv WAZUH_AUTHD_PORT)
-    WAZUH_PASSWORD=$(launchctl getenv WAZUH_PASSWORD)
-    WAZUH_GROUP=$(launchctl getenv WAZUH_GROUP)
-    WAZUH_CERTIFICATE=$(launchctl getenv WAZUH_CERTIFICATE)
-    WAZUH_KEY=$(launchctl getenv WAZUH_KEY)
-    WAZUH_PEM=$(launchctl getenv WAZUH_PEM)
-
+#
+    #export WAZUH_MANAGER
+    #export WAZUH_MANAGER_PORT
+    #export WAZUH_PROTOCOL
+    #export WAZUH_REGISTRATION_SERVER
+    #export WAZUH_REGISTRATION_PORT
+    #export WAZUH_REGISTRATION_PASSWORD
+    #export WAZUH_KEEP_ALIVE_INTERVAL
+    #export WAZUH_TIME_RECONNECT
+    #export WAZUH_REGISTRATION_CA
+    #export WAZUH_REGISTRATION_CERTIFICATE
+    #export WAZUH_REGISTRATION_KEY
+    #export WAZUH_AGENT_NAME
+    #export WAZUH_AGENT_GROUP
+    #export ENROLLMENT_DELAY
+#
+    #WAZUH_MANAGER=$(launchctl getenv WAZUH_MANAGER)
+    #WAZUH_MANAGER_PORT=$(launchctl getenv WAZUH_MANAGER_PORT)
+    #WAZUH_PROTOCOL=$(launchctl getenv WAZUH_PROTOCOL)
+    #WAZUH_REGISTRATION_SERVER=$(launchctl getenv WAZUH_REGISTRATION_SERVER)
+    #WAZUH_REGISTRATION_PORT=$(launchctl getenv WAZUH_REGISTRATION_PORT)
+    #WAZUH_REGISTRATION_PASSWORD=$(launchctl getenv WAZUH_REGISTRATION_PASSWORD)
+    #WAZUH_KEEP_ALIVE_INTERVAL=$(launchctl getenv WAZUH_KEEP_ALIVE_INTERVAL)
+    #WAZUH_TIME_RECONNECT=$(launchctl getenv WAZUH_TIME_RECONNECT)
+    #WAZUH_REGISTRATION_CA=$(launchctl getenv WAZUH_REGISTRATION_CA)
+    #WAZUH_REGISTRATION_CERTIFICATE=$(launchctl getenv WAZUH_REGISTRATION_CERTIFICATE)
+    #WAZUH_REGISTRATION_KEY=$(launchctl getenv WAZUH_REGISTRATION_KEY)
+    #WAZUH_AGENT_NAME=$(launchctl getenv WAZUH_AGENT_NAME)
+    #WAZUH_AGENT_GROUP=$(launchctl getenv WAZUH_AGENT_GROUP)
+    #ENROLLMENT_DELAY=$(launchctl getenv ENROLLMENT_DELAY)
+#
+    ## The following variables are yet supported but all of them are deprecated
+    #export WAZUH_MANAGER_IP
+    #export WAZUH_NOTIFY_TIME
+    #export WAZUH_AUTHD_SERVER
+    #export WAZUH_AUTHD_PORT
+    #export WAZUH_PASSWORD
+    #export WAZUH_GROUP
+    #export WAZUH_CERTIFICATE
+    #export WAZUH_KEY
+    #export WAZUH_PEM
+#
+    #WAZUH_MANAGER_IP=$(launchctl getenv WAZUH_MANAGER_IP)
+    #WAZUH_NOTIFY_TIME=$(launchctl getenv WAZUH_NOTIFY_TIME)
+    #WAZUH_AUTHD_SERVER=$(launchctl getenv WAZUH_AUTHD_SERVER)
+    #WAZUH_AUTHD_PORT=$(launchctl getenv WAZUH_AUTHD_PORT)
+    #WAZUH_PASSWORD=$(launchctl getenv WAZUH_PASSWORD)
+    #WAZUH_GROUP=$(launchctl getenv WAZUH_GROUP)
+    #WAZUH_CERTIFICATE=$(launchctl getenv WAZUH_CERTIFICATE)
+    #WAZUH_KEY=$(launchctl getenv WAZUH_KEY)
+    #WAZUH_PEM=$(launchctl getenv WAZUH_PEM)
+#
 }
 
 unset_vars() {
@@ -234,7 +234,7 @@ unset_vars() {
 
     for var in "${vars[@]}"; do
         if [ "${OS}" = "Darwin" ]; then
-            launchctl unsetenv "${var}"
+            #launchctl unsetenv "${var}"
         fi
         unset "${var}"
     done
