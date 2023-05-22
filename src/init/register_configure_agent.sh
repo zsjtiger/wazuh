@@ -312,7 +312,7 @@ main () {
 
     # Check what kind of system we are working with
     if [ "${uname_s}" = "Darwin" ]; then
-        sed="sed -re"
+        sed="sed -i -re"
         set_vars
     elif [ "${uname_s}" = "AIX" ] || [ "${uname_s}" = "SunOS" ] || [ "${uname_s}" = "HP-UX" ]; then
         use_unix_sed="True"
