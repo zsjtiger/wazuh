@@ -8,8 +8,6 @@
 # Foundation.
 
 # Global variables
-set -x
-
 INSTALLDIR=${1}
 CONF_FILE="${INSTALLDIR}/etc/ossec.conf"
 TMP_ENROLLMENT="${INSTALLDIR}/tmp/enrollment-configuration"
@@ -92,6 +90,7 @@ delete_auto_enrollment_tag() {
 
 # Change address block of the ossec.conf
 add_adress_block() {
+    set -x
 
     # Remove the server configuration
     if [ "${use_unix_sed}" = "False" ] ; then
@@ -123,6 +122,8 @@ add_adress_block() {
     fi
 
     rm -f "${TMP_SERVER}"
+
+    set +x
 
 }
 
@@ -310,6 +311,8 @@ set_auto_enrollment_tag_value () {
 # Main function the script begin here
 main () {
 
+    set -x
+
     uname_s=$(uname -s)
 
     # Check what kind of system we are working with
@@ -374,6 +377,8 @@ main () {
     edit_value_tag "time-reconnect" "${WAZUH_TIME_RECONNECT}"
 
     unset_vars "${uname_s}"
+
+    set +x
 
 }
 
