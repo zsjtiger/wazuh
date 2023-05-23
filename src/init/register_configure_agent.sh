@@ -8,6 +8,8 @@
 # Foundation.
 
 # Global variables
+set -x
+
 INSTALLDIR=${1}
 CONF_FILE="${INSTALLDIR}/etc/ossec.conf"
 TMP_ENROLLMENT="${INSTALLDIR}/tmp/enrollment-configuration"
