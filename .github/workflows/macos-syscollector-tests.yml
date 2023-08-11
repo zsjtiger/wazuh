@@ -1,7 +1,7 @@
 name: Syscollector test on macOS
 
 on:
-  pull_request:
+  push:
     paths:
         - ".github/workflows/macos-syscollector-tests.yml"
         - "src/data_provider/**"
