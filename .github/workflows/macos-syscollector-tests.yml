@@ -38,6 +38,8 @@ jobs:
       - name: Install port
         run: |
           sudo /opt/local/bin/port install neovim
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
       - name: Run tests
         run: |
           cd src/data_provider
