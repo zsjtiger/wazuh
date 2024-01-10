@@ -557,7 +557,7 @@ int restore_audit_policies() {
     }
     // Get the current policies
     char *cmd_output = NULL;
-    const int wm_exec_ret_code = wm_exec(command, &cmd_output, &result_code, 1, NULL);
+    const int wm_exec_ret_code = wm_exec(command, &cmd_output, &result_code, 10, NULL);
 
     if (wm_exec_ret_code < 0) {
         merror(FIM_ERROR_WHODATA_AUDITPOL, "failed to execute command");
