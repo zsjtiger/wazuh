@@ -1262,7 +1262,7 @@ int set_policies() {
     snprintf(command, OS_SIZE_1024, WPOL_BACKUP_COMMAND, WPOL_BACKUP_FILE);
 
     // Get the current policies
-    int wm_exec_ret_code = wm_exec(command, NULL, &result_code, 5, NULL);
+    int wm_exec_ret_code = wm_exec(command, NULL, &result_code, 10, NULL);
     if (wm_exec_ret_code || result_code) {
         retval = 2;
         merror(FIM_WARN_WHODATA_AUTOCONF);
@@ -1292,7 +1292,7 @@ int set_policies() {
     snprintf(command, OS_SIZE_1024, WPOL_RESTORE_COMMAND, WPOL_NEW_FILE);
 
     // Set the new policies
-    wm_exec_ret_code = wm_exec(command, NULL, &result_code, 5, NULL);
+    wm_exec_ret_code = wm_exec(command, NULL, &result_code, 10, NULL);
     if (wm_exec_ret_code || result_code) {
         retval = 2;
         merror(FIM_WARN_WHODATA_AUTOCONF);
