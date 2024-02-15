@@ -60,7 +60,7 @@ EXTERNAL_JSON=external/cJSON/
 EXTERNAL_ZLIB=external/zlib/
 EXTERNAL_SQLITE=external/sqlite/
 EXTERNAL_OPENSSL=external/openssl/
-EXTERNAL_LIBYAML=external/libyaml/
+EXTERNAL_LIBYAML=/home/vagrant/vcpkg/installed/x64-linux/lib/
 EXTERNAL_CURL=external/curl/
 EXTERNAL_AUDIT=external/audit-userspace/
 EXTERNAL_LIBFFI=external/libffi/
@@ -405,7 +405,7 @@ endif
 
 OSSEC_CFLAGS+=${DEFINES}
 OSSEC_CFLAGS+=-pipe -Wall -Wextra -std=gnu99
-OSSEC_CFLAGS+=-I./ -I./headers/ -I${EXTERNAL_OPENSSL}include -I$(EXTERNAL_JSON) -I${EXTERNAL_LIBYAML}include -I${EXTERNAL_CURL}include -I${EXTERNAL_MSGPACK}include -I${EXTERNAL_BZIP2} -I${SHARED_MODULES}common -I${DBSYNC}include -I${RSYNC}include -I${SYSCOLLECTOR}include  -I${SYSINFO}include  -I${EXTERNAL_LIBPCRE2}include -I${EXTERNAL_RPM}/builddir/output/include -I${SYSCHECK}include -I${ROUTER}include -I${CONTENT_MANAGER}include -I${VULNERABILITY_SCANNER}include -I./shared_modules/
+OSSEC_CFLAGS+=-I./ -I./headers/ -I${EXTERNAL_OPENSSL}include -I$(EXTERNAL_JSON) -I/home/vagrant/vcpkg/installed/x64-linux/include/ -I${EXTERNAL_CURL}include -I${EXTERNAL_MSGPACK}include -I${EXTERNAL_BZIP2} -I${SHARED_MODULES}common -I${DBSYNC}include -I${RSYNC}include -I${SYSCOLLECTOR}include  -I${SYSINFO}include  -I${EXTERNAL_LIBPCRE2}include -I${EXTERNAL_RPM}/builddir/output/include -I${SYSCHECK}include -I${ROUTER}include -I${CONTENT_MANAGER}include -I${VULNERABILITY_SCANNER}include -I./shared_modules/
 
 OSSEC_CFLAGS += ${CFLAGS}
 OSSEC_LDFLAGS += ${LDFLAGS}
@@ -769,7 +769,6 @@ BUILD_SERVER+=wazuh-dbd -
 BUILD_SERVER+=wazuh-integratord
 BUILD_SERVER+=wazuh-modulesd
 BUILD_SERVER+=wazuh-db
-BUILD_SERVER+=wazuh-keystore
 
 BUILD_AGENT+=wazuh-agentd
 BUILD_AGENT+=agent-auth
@@ -906,7 +905,7 @@ PROCPS_LIB  = $(EXTERNAL_PROCPS)/libproc.a
 DB_LIB      = $(EXTERNAL_LIBDB).libs/libdb-18.1.a
 LIBALPM_LIB  = $(EXTERNAL_PACMAN)lib/libalpm/libalpm.a
 LIBARCHIVE_LIB  = $(EXTERNAL_LIBARCHIVE).libs/libarchive.a
-LIBYAML_LIB = $(EXTERNAL_LIBYAML)src/.libs/libyaml.a
+LIBYAML_LIB = /home/vagrant/vcpkg/installed/x64-linux/lib/libyaml.a
 LIBCURL_LIB = $(EXTERNAL_CURL)lib/.libs/libcurl.a
 AUDIT_LIB 	= $(EXTERNAL_AUDIT)lib/.libs/libaudit.a
 LIBFFI_LIB 	= $(EXTERNAL_LIBFFI)$(TARGET)/.libs/libffi.a
@@ -1113,18 +1112,6 @@ $(JSON_LIB): ${cjson_o}
 
 ${EXTERNAL_JSON}%.o: ${EXTERNAL_JSON}%.c
 	${OSSEC_CC} ${OSSEC_CFLAGS} -fPIC -c $^ -o $@
-
-#### libyaml ##########
-
-${LIBYAML_LIB}: $(EXTERNAL_LIBYAML)Makefile
-	$(MAKE) -C $(EXTERNAL_LIBYAML)
-
-$(EXTERNAL_LIBYAML)Makefile:
-ifeq (${TARGET},winagent)
-	cd $(EXTERNAL_LIBYAML) && CC=${MING_BASE}${CC} && CFLAGS=-fPIC ./configure --host=${MINGW_HOST} --enable-static=yes
-else
-	cd $(EXTERNAL_LIBYAML) && CFLAGS=-fPIC ./configure --enable-static=yes --enable-shared=no
-endif
 
 #### curl ##########
 
@@ -1762,6 +1749,7 @@ ifeq (${TARGET},agent)
 else ifeq (${TARGET},winagent)
 	wmodules_c := ${wmodules_c} $(wildcard wazuh_modules/agent_upgrade/agent/*.c)
 else
+	wmodules_c := ${wmodules_c} $(wildcard wazuh_modules/vulnerability_detector/*.c)
 	wmodules_c := ${wmodules_c} $(wildcard wazuh_modules/task_manager/*.c)
 	wmodules_c := ${wmodules_c} $(wildcard wazuh_modules/agent_upgrade/manager/*.c)
 endif
@@ -2641,7 +2629,6 @@ ifneq ($(wildcard external/*/*),)
 	-cd ${EXTERNAL_ZLIB} && ${MAKE} -f win32/Makefile.gcc clean
 	rm -f ${EXTERNAL_ZLIB}/Makefile ${EXTERNAL_ZLIB}/zconf.h
 	-cd ${EXTERNAL_OPENSSL} && ${MAKE} distclean
-	-cd ${EXTERNAL_LIBYAML} && ${MAKE} distclean
 	-cd ${EXTERNAL_CURL} && ${MAKE} distclean
 	rm -f ${procps_o} $(PROCPS_LIB)
 	rm -f $(sqlite_o) $(EXTERNAL_SQLITE)/libsqlite3.*
