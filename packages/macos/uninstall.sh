@@ -1,8 +1,8 @@
 #!/bin/sh
 
 ## Stop and remove application
-sudo /Library/Ossec/bin/wazuh-control stop
-sudo /bin/rm -r /Library/Ossec*
+sudo /var/ossec/bin/wazuh-control stop
+sudo /bin/rm -r /var/ossec*
 
 # remove launchdaemons
 /bin/rm -f /Library/LaunchDaemons/com.wazuh.agent.plist

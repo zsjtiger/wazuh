@@ -205,7 +205,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/.ssh</string>
+											<string>/var/ossec/.ssh</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -221,7 +221,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/active-response</string>
+											<string>/var/ossec/active-response</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -237,7 +237,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/agentless</string>
+											<string>/var/ossec/agentless</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -253,7 +253,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/bin</string>
+											<string>/var/ossec/bin</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -272,7 +272,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/internal_options.conf</string>
+													<string>/var/ossec/etc/internal_options.conf</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -288,7 +288,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/localtime</string>
+													<string>/var/ossec/etc/localtime</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -304,7 +304,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/client.keys</string>
+													<string>/var/ossec/etc/client.keys</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -320,7 +320,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/local_internal_options.conf</string>
+													<string>/var/ossec/etc/local_internal_options.conf</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -336,7 +336,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/ossec.conf</string>
+													<string>/var/ossec/etc/ossec.conf</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -352,7 +352,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/shared</string>
+													<string>/var/ossec/etc/shared</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -368,7 +368,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>/Library/Ossec/etc/wpk_root.pem</string>
+													<string>/var/ossec/etc/wpk_root.pem</string>
 													<key>PATH_TYPE</key>
 													<integer>0</integer>
 													<key>PERMISSIONS</key>
@@ -384,7 +384,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/etc</string>
+											<string>/var/ossec/etc</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -400,7 +400,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/lib</string>
+											<string>/var/ossec/lib</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -416,7 +416,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/logs</string>
+											<string>/var/ossec/logs</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -432,7 +432,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/queue</string>
+											<string>/var/ossec/queue</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -448,7 +448,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/tmp</string>
+											<string>/var/ossec/tmp</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -464,7 +464,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/packages_files</string>
+											<string>/var/ossec/packages_files</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -480,7 +480,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/var</string>
+											<string>/var/ossec/var</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -496,7 +496,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/wodles</string>
+											<string>/var/ossec/wodles</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -512,7 +512,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Library/Ossec/ruleset</string>
+											<string>/var/ossec/ruleset</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
@@ -528,7 +528,7 @@
 									<key>GID</key>
 									<integer>0</integer>
 									<key>PATH</key>
-									<string>/Library/Ossec</string>
+									<string>/var/ossec</string>
 									<key>PATH_TYPE</key>
 									<integer>0</integer>
 									<key>PERMISSIONS</key>
@@ -702,7 +702,7 @@
 							<key>GID</key>
 							<integer>0</integer>
 							<key>PATH</key>
-							<string>Library</string>
+							<string>var</string>
 							<key>PATH_TYPE</key>
 							<integer>0</integer>
 							<key>PERMISSIONS</key>
