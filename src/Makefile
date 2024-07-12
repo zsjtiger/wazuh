@@ -144,12 +144,12 @@ SYSINFO_TEST=-DUNIT_TEST=ON #--coverage
 WAZUH_TEST=-DUNIT_TEST=ON #--coverage
 endif
 ifneq (,$(filter ${DEBUG},YES yes y Y 1))
-SHARED_MODULES_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=Debug
-GTEST_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=Debug
-SYSCOLLECTOR_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=Debug
-SYSINFO_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=Debug
-SYSCHECK_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=Debug
-WAZUH_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=Debug
+SHARED_MODULES_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=RelWithDebInfo
+GTEST_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=RelWithDebInfo
+SYSCOLLECTOR_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=RelWithDebInfo
+SYSINFO_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=RelWithDebInfo
+SYSCHECK_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=RelWithDebInfo
+WAZUH_RELEASE_TYPE=-DCMAKE_BUILD_TYPE=RelWithDebInfo
 endif
 
 ifeq (${COVERITY}, YES)
@@ -359,14 +359,9 @@ ifneq (,$(filter ${DEBUGAD},YES yes y Y 1))
 	DEFINES+=-DDEBUGAD
 endif
 
-ifneq (,$(filter ${DEBUG},YES yes y Y 1))
-	OSSEC_CFLAGS+=-g
-	AR_LDFLAGS+=-g
-else
-	OSSEC_CFLAGS+=-DNDEBUG
-	OFLAGS+=-O2
-	AR_LDFLAGS+=-s
-endif #DEBUG
+OSSEC_CFLAGS+=-g
+OFLAGS+=-O2
+AR_LDFLAGS+=-g
 
 OSSEC_CFLAGS+=${OFLAGS}
 OSSEC_LDFLAGS+=${OFLAGS}
@@ -1324,9 +1319,9 @@ ${RPM_BUILD_DIR}/Makefile: ${OPENSSL_LIB} ${ZLIB_LIB} ${POPT_LIB} ${SQLITE_LIB} 
 $(JEMALLOC_LIB):
 ifeq (${TARGET},server)
 ifneq ($(wildcard external/jemalloc/configure),)
-	cd ${EXTERNAL_JEMALLOC} && LDFLAGS=-s ./configure --disable-static --disable-cxx && ${MAKE}
+	cd ${EXTERNAL_JEMALLOC} && LDFLAGS=./configure --disable-static --disable-cxx && ${MAKE}
 else
-	cd ${EXTERNAL_JEMALLOC} && LDFLAGS=-s ./autogen.sh --disable-static --disable-cxx && ${MAKE}
+	cd ${EXTERNAL_JEMALLOC} && LDFLAGS=./autogen.sh --disable-static --disable-cxx && ${MAKE}
 endif
 endif
 

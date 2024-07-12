@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 include_directories(${SRC_FOLDER})
 include_directories(${SRC_FOLDER}/external/flatbuffers/include)
+set(CMAKE_CXX_FLAGS "-g")
 
 # Link directories
 link_directories(${SRC_FOLDER}/external/flatbuffers/build)

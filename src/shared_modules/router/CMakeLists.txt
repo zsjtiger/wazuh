@@ -6,6 +6,7 @@ enable_testing()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-g")
 
 add_definitions(-DPROMISE_TYPE=PromiseType::NORMAL)
 

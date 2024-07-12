@@ -22,13 +22,13 @@ if(COVERITY)
   add_definitions(-D__GNUC__=8)
 endif(COVERITY)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Woverloaded-virtual -Wunused -Wcast-align -Wformat=2 -std=c++14 -pthread")
+set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Woverloaded-virtual -Wunused -Wcast-align -Wformat=2 -std=c++14 -pthread")
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  set(CMAKE_CXX_FLAGS_RELEASE "-g -O3")
 else()
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -g")
 endif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 if(FSANITIZE)

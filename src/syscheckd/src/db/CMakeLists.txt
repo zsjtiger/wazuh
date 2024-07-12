@@ -44,7 +44,7 @@ else()
   add_library(fimdb SHARED ${DB_SRC})
 endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
-
+set(CMAKE_CXX_FLAGS "-g")
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_target_properties(
     fimdb PROPERTIES LINK_FLAGS "-Wl,--add-stdcall-alias -Wl,--output-def,libfimdb.def")

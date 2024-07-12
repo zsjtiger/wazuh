@@ -45,13 +45,13 @@ else()
 endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Woverloaded-virtual -Wunused -Wcast-align -Wformat=2")
+set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Woverloaded-virtual -Wunused -Wcast-align -Wformat=2")
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -g")
 else()
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -g")
 endif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 if(FSANITIZE)
