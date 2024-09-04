@@ -62,6 +62,7 @@ tags:
 '''
 import sys
 import pytest
+import time
 
 from pathlib import Path
 
@@ -165,5 +166,7 @@ def test_ignore_works_over_restrict(test_configuration, test_metadata, set_wazuh
     '''
     wazuh_log_monitor = FileMonitor(WAZUH_LOG_PATH)
     wazuh_log_monitor.start(callback=generate_callback(test_metadata['regex']))
+
+    time.sleep(20)
 
     assert wazuh_log_monitor.callback_result
