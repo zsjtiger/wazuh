@@ -85,7 +85,7 @@ class AWSBucket(wazuh_integration.WazuhAWSDatabase):
 
     def __init__(self, db_table_name, bucket, reparse, profile, iam_role_arn,
                  only_logs_after, skip_on_error, account_alias, prefix, suffix, delete_file, aws_organization_id,
-                 region, discard_field, discard_regex, sts_endpoint, service_endpoint, iam_role_duration=None):
+                 region, discard_field, discard_regex, sts_endpoint, service_endpoint, iam_role_duration = None):
         # common SQL queries
         self.sql_already_processed = """
             SELECT
@@ -702,15 +702,9 @@ class AWSLogsBucket(AWSBucket):
             aws_service=self.service)
 
     def get_full_prefix(self, account_id, account_region, acl_name=None):
-        if acl_name is not None:
-            return '{service_prefix}{aws_region}/{acl}/'.format(
-                service_prefix=self.get_service_prefix(account_id),
-                aws_region=account_region,
-                acl=acl_name)
-        else:
-            return '{service_prefix}{aws_region}/'.format(
-                service_prefix=self.get_service_prefix(account_id),
-                aws_region=account_region)
+        return '{service_prefix}{aws_region}/'.format(
+            service_prefix=self.get_service_prefix(account_id),
+            aws_region=account_region)
 
     def get_creation_date(self, log_file):
         # An example of cloudtrail filename would be
@@ -857,7 +851,7 @@ class AWSCustomBucket(AWSBucket):
         else:
             return int(name_regex.group(1).replace('/', '').replace('-', ''))
 
-    def get_full_prefix(self, account_id, account_region, acl_name=None):
+    def get_full_prefix(self, account_id, account_region):
         return self.prefix
 
     def reformat_msg(self, event):

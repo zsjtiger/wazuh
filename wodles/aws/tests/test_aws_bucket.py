@@ -11,7 +11,7 @@ import zipfile
 import re
 import csv
 from datetime import datetime
-from unittest.mock import MagicMock, patch, mock_open
+from unittest.mock import MagicMock, patch, mock_open, call
 
 import botocore
 import pytest
@@ -407,6 +407,7 @@ def test_aws_bucket_build_s3_filter_args(mock_get_full_prefix, custom_database,
 
     aws_account_id = utils.TEST_ACCOUNT_ID
     aws_region = region
+    acl_name=None
 
     if bucket.reparse:
         if only_logs_after:
