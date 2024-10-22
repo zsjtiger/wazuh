@@ -1,5 +1,0 @@
-[
-    "No match due to default status for Package: python3-libs, Version: 3.9.18-1.el9_3 while scanning for Vulnerability: CVE-2022-0391",
-    "No match due to default status for Package: python3, Version: 3.9.18-1.el9_3 while scanning for Vulnerability: CVE-2022-0391",
-    "No match due to default status for Package: python-unversioned-command, Version: 3.9.18-1.el9_3 while scanning for Vulnerability: CVE-2022-0391"
-]
