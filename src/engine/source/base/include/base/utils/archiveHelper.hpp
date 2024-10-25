@@ -14,7 +14,6 @@
 
 #include "archive.h"
 #include "archive_entry.h"
-#include "customDeleter.hpp"
 #include <algorithm>
 #include <atomic>
 #include <filesystem>
