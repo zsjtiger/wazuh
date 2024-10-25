@@ -19,57 +19,57 @@
 
 namespace Xz
 {
+/**
+ * @brief Provides data from an input file
+ *
+ */
+class FileDataProvider : public IDataProvider
+{
+    static constexpr size_t DEFAULT_BUFFER_SIZE {8192}; ///< Default buffer size
+    std::filesystem::path m_filePath;                   ///< Input file path
+    std::ifstream m_file;                               ///< Input file stream
+    std::vector<uint8_t> m_buffer;                      ///< Buffer used to read data from the file
+
+public:
     /**
-     * @brief Provides data from an input file
+     * @brief Construct a new File Data Provider object
      *
+     * @param inputFilePath Path to the input file
+     * @param bufferSize Size to give to the reading buffer
      */
-    class FileDataProvider : public IDataProvider
+    explicit FileDataProvider(const std::filesystem::path& inputFilePath, size_t bufferSize = DEFAULT_BUFFER_SIZE)
+        : m_filePath(inputFilePath)
     {
-        static constexpr size_t DEFAULT_BUFFER_SIZE {8192}; ///< Default buffer size
-        std::filesystem::path m_filePath;                   ///< Input file path
-        std::ifstream m_file;                               ///< Input file stream
-        std::vector<uint8_t> m_buffer;                      ///< Buffer used to read data from the file
+        m_buffer.resize(bufferSize);
+    }
 
-    public:
-        /**
-         * @brief Construct a new File Data Provider object
-         *
-         * @param inputFilePath Path to the input file
-         * @param bufferSize Size to give to the reading buffer
-         */
-        explicit FileDataProvider(const std::filesystem::path& inputFilePath, size_t bufferSize = DEFAULT_BUFFER_SIZE)
-            : m_filePath(inputFilePath)
+    /*! @copydoc IDataProvider::begin() */
+    void begin() override
+    {
+        m_file = std::ifstream(m_filePath);
+        if (!m_file.is_open())
         {
-            m_buffer.resize(bufferSize);
+            throw std::runtime_error("Could not open input file '" + m_filePath.string() + "'");
         }
+    }
 
-        /*! @copydoc IDataProvider::begin() */
-        void begin() override
+    /**
+     * @copydoc IDataProvider::getNextBlock()
+     * @details Read a block of data from the file into m_buffer. If the end of the file was reached returns dataLen
+     * = 0
+     * @return DataBlock
+     */
+    DataBlock getNextBlock() override
+    {
+        DataBlock dataBlock;
+        if (!m_file.eof())
         {
-            m_file = std::ifstream(m_filePath);
-            if (!m_file.is_open())
-            {
-                throw std::runtime_error("Could not open input file '" + m_filePath.string() + "'");
-            }
+            m_file.read(reinterpret_cast<char*>(m_buffer.data()), m_buffer.size());
+            dataBlock.data = m_buffer.data();
+            dataBlock.dataLen = m_file.gcount();
         }
-
-        /**
-         * @copydoc IDataProvider::getNextBlock()
-         * @details Read a block of data from the file into m_buffer. If the end of the file was reached returns dataLen
-         * = 0
-         * @return DataBlock
-         */
-        DataBlock getNextBlock() override
-        {
-            DataBlock dataBlock;
-            if (!m_file.eof())
-            {
-                m_file.read(reinterpret_cast<char*>(m_buffer.data()), m_buffer.size());
-                dataBlock.data = m_buffer.data();
-                dataBlock.dataLen = m_file.gcount();
-            }
-            return dataBlock;
-        }
-    };
+        return dataBlock;
+    }
+};
 } // namespace Xz
 #endif // _FILE_DATA_PROVIDER_HPP

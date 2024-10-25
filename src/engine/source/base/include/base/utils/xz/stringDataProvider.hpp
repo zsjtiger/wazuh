@@ -17,46 +17,43 @@
 
 namespace Xz
 {
+/**
+ * @brief Provides data from a string
+ *
+ */
+class StringDataProvider : public IDataProvider
+{
+    const std::string& m_inputData; ///< Reference to the input string
+    bool hasPendingData {true};     ///< Indicates whether there is unprocessed data.
+
+public:
     /**
-     * @brief Provides data from a string
+     * @brief Construct a new String Data Provider object
      *
+     * @param inputData String with the input data
      */
-    class StringDataProvider : public IDataProvider
+    explicit StringDataProvider(const std::string& inputData)
+        : m_inputData(inputData)
     {
-        const std::string& m_inputData; ///< Reference to the input string
-        bool hasPendingData {true};     ///< Indicates whether there is unprocessed data.
+    }
 
-    public:
-        /**
-         * @brief Construct a new String Data Provider object
-         *
-         * @param inputData String with the input data
-         */
-        explicit StringDataProvider(const std::string& inputData)
-            : m_inputData(inputData)
-        {
-        }
+    /*! @copydoc IDataProvider::begin() */
+    void begin() override { hasPendingData = true; }
 
-        /*! @copydoc IDataProvider::begin() */
-        void begin() override
+    /*! @copydoc IDataProvider::getNextBlock() */
+    DataBlock getNextBlock() override
+    {
+        DataBlock dataBlock;
+        if (hasPendingData)
         {
-            hasPendingData = true;
+            // Since all the input data is already available in the input string just provide all the data in one
+            // block.
+            dataBlock.data = reinterpret_cast<const uint8_t*>(m_inputData.data());
+            dataBlock.dataLen = m_inputData.size();
+            hasPendingData = false;
         }
-
-        /*! @copydoc IDataProvider::getNextBlock() */
-        DataBlock getNextBlock() override
-        {
-            DataBlock dataBlock;
-            if (hasPendingData)
-            {
-                // Since all the input data is already available in the input string just provide all the data in one
-                // block.
-                dataBlock.data = reinterpret_cast<const uint8_t*>(m_inputData.data());
-                dataBlock.dataLen = m_inputData.size();
-                hasPendingData = false;
-            }
-            return dataBlock;
-        }
-    };
+        return dataBlock;
+    }
+};
 } // namespace Xz
 #endif // _STRING_DATA_PROVIDER_HPP

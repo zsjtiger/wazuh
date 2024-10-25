@@ -16,41 +16,41 @@
 
 namespace Xz
 {
+/**
+ * @brief Data provider interface for the XZ wrapper
+ *
+ */
+class IDataProvider
+{
+public:
     /**
-     * @brief Data provider interface for the XZ wrapper
+     * @brief Struct that represents a block of data to be processed by the Xz wrapper
      *
      */
-    class IDataProvider
+    struct DataBlock
     {
-    public:
-        /**
-         * @brief Struct that represents a block of data to be processed by the Xz wrapper
-         *
-         */
-        struct DataBlock
-        {
-            // cppcheck-suppress unusedStructMember
-            const uint8_t* data {}; ///< Pointer to the start of the data block
-            // cppcheck-suppress unusedStructMember
-            size_t dataLen {}; ///< Size of the data block
-        };
-
-        // LCOV_EXCL_START
-        virtual ~IDataProvider() = default;
-        // LCOV_EXCL_STOP
-
-        /**
-         * @brief Called at the start of the process so that the provider can initialize its internal state
-         *
-         */
-        virtual void begin() = 0;
-
-        /**
-         * @brief Get the next input data block
-         * @details When the returned dataLen is 0 it signals that there is no more data to be processed.
-         * @return DataBlock
-         */
-        virtual DataBlock getNextBlock() = 0;
+        // cppcheck-suppress unusedStructMember
+        const uint8_t* data {}; ///< Pointer to the start of the data block
+        // cppcheck-suppress unusedStructMember
+        size_t dataLen {}; ///< Size of the data block
     };
+
+    // LCOV_EXCL_START
+    virtual ~IDataProvider() = default;
+    // LCOV_EXCL_STOP
+
+    /**
+     * @brief Called at the start of the process so that the provider can initialize its internal state
+     *
+     */
+    virtual void begin() = 0;
+
+    /**
+     * @brief Get the next input data block
+     * @details When the returned dataLen is 0 it signals that there is no more data to be processed.
+     * @return DataBlock
+     */
+    virtual DataBlock getNextBlock() = 0;
+};
 } // namespace Xz
 #endif // _I_DATA_PROVIDER_HPP
