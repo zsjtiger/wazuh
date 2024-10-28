@@ -38,7 +38,7 @@ using ArchiveWritePtr = std::unique_ptr<
     struct archive,
     Deleter<decltype(&archive_write_close), decltype(&archive_write_free), archive_write_close, archive_write_free>>;
 
-namespace Utils
+namespace base::utils
 {
 /**
  * @brief Decompression for .tar compressed files.
@@ -171,6 +171,6 @@ public:
         }
     }
 };
-} // namespace Utils
+} // namespace base::utils
 
 #endif // _ARCHIVE_HELPER_HPP

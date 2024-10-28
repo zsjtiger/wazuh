@@ -61,6 +61,7 @@ add_dependencies(database_feed compile_schemas)
 target_link_libraries(database_feed
         flatbuffers::flatbuffers
         RocksDB::rocksdb
+        liblzma::liblzma
         base
         )
 

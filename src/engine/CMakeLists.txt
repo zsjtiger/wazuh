@@ -184,7 +184,7 @@ find_and_create_imported_target("httplib" "httplib::httplib")
 find_and_create_imported_target("date" "date::date")
 find_and_create_imported_target("date" "date::date-tz")
 
-find_and_create_imported_target("liblzma" "lzma::lzma")
+find_and_create_imported_target("liblzma" "liblzma::liblzma")
 #find_and_create_imported_target("LibArchive" "LibArchive::LibArchive")
 
 ####################################################################################################

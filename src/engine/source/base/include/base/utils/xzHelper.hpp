@@ -8,6 +8,7 @@
 #ifndef _XZ_HELPER_HPP
 #define _XZ_HELPER_HPP
 
+// TODO: FIX THIS
 #include "xz/fileDataCollector.hpp"
 #include "xz/fileDataProvider.hpp"
 #include "xz/iDataCollector.hpp"
@@ -21,7 +22,7 @@
 #include <string>
 #include <vector>
 
-namespace Utils
+namespace base::utils
 {
 /**
  * @brief Helper class for compressing/decompressing data in xz format
@@ -151,6 +152,6 @@ public:
     }
 };
 
-} // namespace Utils
+} // namespace base::utils
 
 #endif // _XZ_HELPER_HPP
