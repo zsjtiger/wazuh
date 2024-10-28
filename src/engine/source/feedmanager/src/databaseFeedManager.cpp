@@ -63,13 +63,13 @@ DatabaseFeedManager::DatabaseFeedManager(std::shared_mutex& mutex)
             }
 
             std::filesystem::rename(LEGACY_DB_PATH, CURRENT_DB_PATH);
-
-            m_feedDatabase = std::make_unique<utils::rocksdb::RocksDBWrapper>(DATABASE_PATH, false);
-
-            // Try to load global maps from the database, if it fails we throw an exception to force the download of
-            // the complete feed.
-            reloadGlobalMaps();
         }
+
+        m_feedDatabase = std::make_unique<utils::rocksdb::RocksDBWrapper>(DATABASE_PATH, false);
+
+        // Try to load global maps from the database, if it fails we throw an exception to force the download of
+        // the complete feed.
+        reloadGlobalMaps();
     }
     catch (const std::exception& ex)
     {
