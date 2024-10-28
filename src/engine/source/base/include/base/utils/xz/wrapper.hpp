@@ -12,11 +12,12 @@
 #ifndef _XZ_WRAPPER
 #define _XZ_WRAPPER
 
+#include <stdexcept>
+#include <string>
+
 #include "iDataCollector.hpp"
 #include "iDataProvider.hpp"
 #include "lzma.h"
-#include <stdexcept>
-#include <string>
 
 namespace Xz
 {

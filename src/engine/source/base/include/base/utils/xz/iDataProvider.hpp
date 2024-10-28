@@ -11,6 +11,7 @@
 
 #ifndef _I_DATA_PROVIDER_HPP
 #define _I_DATA_PROVIDER_HPP
+
 #include <cstddef>
 #include <cstdint>
 

@@ -12,10 +12,11 @@
 #ifndef _VECTOR_DATA_PROVIDER_HPP
 #define _VECTOR_DATA_PROVIDER_HPP
 
-#include "iDataProvider.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+
+#include "iDataProvider.hpp"
 
 namespace Xz
 {

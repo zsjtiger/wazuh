@@ -12,12 +12,13 @@
 #ifndef _ARCHIVE_HELPER_HPP
 #define _ARCHIVE_HELPER_HPP
 
-#include "archive.h"
-#include "archive_entry.h"
 #include <algorithm>
 #include <atomic>
 #include <filesystem>
 #include <vector>
+
+#include "archive.h"
+#include "archive_entry.h"
 
 template<typename F, typename G, F func1, G func2>
 struct Deleter

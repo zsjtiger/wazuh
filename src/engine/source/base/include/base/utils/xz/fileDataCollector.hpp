@@ -12,11 +12,12 @@
 #ifndef _FILE_DATA_COLLECTOR_HPP
 #define _FILE_DATA_COLLECTOR_HPP
 
-#include "iDataCollector.hpp"
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <vector>
+
+#include "iDataCollector.hpp"
 
 namespace Xz
 {

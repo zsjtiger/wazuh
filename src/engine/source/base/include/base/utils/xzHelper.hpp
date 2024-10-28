@@ -8,7 +8,11 @@
 #ifndef _XZ_HELPER_HPP
 #define _XZ_HELPER_HPP
 
-// TODO: FIX THIS
+#include <filesystem>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "xz/fileDataCollector.hpp"
 #include "xz/fileDataProvider.hpp"
 #include "xz/iDataCollector.hpp"
@@ -17,10 +21,6 @@
 #include "xz/vectorDataCollector.hpp"
 #include "xz/vectorDataProvider.hpp"
 #include "xz/wrapper.hpp"
-#include <filesystem>
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace base::utils
 {

@@ -12,10 +12,11 @@
 #ifndef _FILE_DATA_PROVIDER_HPP
 #define _FILE_DATA_PROVIDER_HPP
 
-#include "iDataProvider.hpp"
 #include <filesystem>
 #include <fstream>
 #include <vector>
+
+#include "iDataProvider.hpp"
 
 namespace Xz
 {

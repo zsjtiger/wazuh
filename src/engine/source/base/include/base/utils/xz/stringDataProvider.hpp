@@ -12,8 +12,10 @@
 #ifndef _STRING_DATA_PROVIDER_HPP
 #define _STRING_DATA_PROVIDER_HPP
 
-#include "iDataProvider.hpp"
 #include <string>
+
+#include "iDataProvider.hpp"
+
 
 namespace Xz
 {

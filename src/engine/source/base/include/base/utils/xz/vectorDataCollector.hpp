@@ -12,10 +12,11 @@
 #ifndef _VECTOR_DATA_COLLECTOR_HPP
 #define _VECTOR_DATA_COLLECTOR_HPP
 
-#include "iDataCollector.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+
+#include "iDataCollector.hpp"
 
 namespace Xz
 {
