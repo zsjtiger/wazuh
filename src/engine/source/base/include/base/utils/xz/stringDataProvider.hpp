@@ -16,7 +16,6 @@
 
 #include "iDataProvider.hpp"
 
-
 namespace Xz
 {
 /**
