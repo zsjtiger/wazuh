@@ -18,7 +18,7 @@
 
 #include "iDataProvider.hpp"
 
-namespace Xz
+namespace base::utils::xz
 {
 /**
  * @brief Provides data from a byte vector
@@ -58,5 +58,5 @@ public:
         return dataBlock;
     }
 };
-} // namespace Xz
+} // namespace base::utils::xz
 #endif // _VECTOR_DATA_PROVIDER_HPP

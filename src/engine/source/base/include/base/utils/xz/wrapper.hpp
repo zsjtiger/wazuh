@@ -19,7 +19,7 @@
 #include "iDataProvider.hpp"
 #include "lzma.h"
 
-namespace Xz
+namespace base::utils::xz
 {
 constexpr inline uint32_t PRESET_9_MAX_COMPRESSION {9};
 constexpr inline uint32_t DEFAULT_COMPRESSION_PRESET {PRESET_9_MAX_COMPRESSION};
@@ -252,5 +252,5 @@ public:
     }
 };
 
-} // namespace Xz
+} // namespace base::utils::xz
 #endif //_XZ_WRAPPER

@@ -18,7 +18,7 @@
 
 #include "iDataCollector.hpp"
 
-namespace Xz
+namespace base::utils::xz
 {
 /**
  * @brief Collects the output data in a vector
@@ -69,5 +69,5 @@ public:
         m_output.resize(m_outDataIdx);
     }
 };
-} // namespace Xz
+} // namespace base::utils::xz
 #endif // _VECTOR_DATA_COLLECTOR_HPP

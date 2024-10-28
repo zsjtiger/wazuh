@@ -16,7 +16,7 @@
 
 #include "iDataProvider.hpp"
 
-namespace Xz
+namespace base::utils::xz
 {
 /**
  * @brief Provides data from a string
@@ -56,5 +56,5 @@ public:
         return dataBlock;
     }
 };
-} // namespace Xz
+} // namespace base::utils::xz
 #endif // _STRING_DATA_PROVIDER_HPP

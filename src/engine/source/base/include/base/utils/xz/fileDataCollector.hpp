@@ -19,7 +19,7 @@
 
 #include "iDataCollector.hpp"
 
-namespace Xz
+namespace base::utils::xz
 {
 /**
  * @brief Collects the output data and saves it to a file
@@ -77,5 +77,5 @@ public:
         }
     }
 };
-} // namespace Xz
+} // namespace base::utils::xz
 #endif // _FILE_DATA_COLLECTOR_HPP

@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace Xz
+namespace base::utils::xz
 {
 /**
  * @brief Data provider interface for the XZ wrapper
@@ -53,5 +53,5 @@ public:
      */
     virtual DataBlock getNextBlock() = 0;
 };
-} // namespace Xz
+} // namespace base::utils::xz
 #endif // _I_DATA_PROVIDER_HPP

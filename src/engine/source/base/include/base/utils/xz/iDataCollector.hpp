@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace Xz
+namespace base::utils::xz
 {
 /**
  * @brief Data collector interface for the XZ Wrapper
@@ -55,5 +55,5 @@ public:
      */
     virtual void dataReady(size_t unusedBufferLen) = 0;
 };
-} // namespace Xz
+} // namespace base::utils::xz
 #endif // _I_DATA_COLLECTOR_HPP

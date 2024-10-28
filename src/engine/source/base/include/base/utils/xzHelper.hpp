@@ -30,8 +30,8 @@ namespace base::utils
  */
 class XzHelper
 {
-    std::unique_ptr<Xz::IDataProvider> m_spDataProvider;   ///< Data provider
-    std::unique_ptr<Xz::IDataCollector> m_spDataCollector; ///< Data collector
+    std::unique_ptr<base::utils::xz::IDataProvider> m_spDataProvider;   ///< Data provider
+    std::unique_ptr<base::utils::xz::IDataCollector> m_spDataCollector; ///< Data collector
     uint32_t m_threadCount;
 
 public:
@@ -44,9 +44,9 @@ public:
      */
     XzHelper(const std::filesystem::path& source,
              const std::filesystem::path& dest,
-             uint32_t threadCount = Xz::DEFAULT_THREAD_COUNT)
-        : m_spDataProvider(std::make_unique<Xz::FileDataProvider>(source))
-        , m_spDataCollector(std::make_unique<Xz::FileDataCollector>(dest))
+             uint32_t threadCount = base::utils::xz::DEFAULT_THREAD_COUNT)
+        : m_spDataProvider(std::make_unique<base::utils::xz::FileDataProvider>(source))
+        , m_spDataCollector(std::make_unique<base::utils::xz::FileDataCollector>(dest))
         , m_threadCount(threadCount)
     {
     }
@@ -60,9 +60,9 @@ public:
      */
     XzHelper(const std::filesystem::path& source,
              std::vector<uint8_t>& dest,
-             uint32_t threadCount = Xz::DEFAULT_THREAD_COUNT)
-        : m_spDataProvider(std::make_unique<Xz::FileDataProvider>(source))
-        , m_spDataCollector(std::make_unique<Xz::VectorDataCollector>(dest))
+             uint32_t threadCount = base::utils::xz::DEFAULT_THREAD_COUNT)
+        : m_spDataProvider(std::make_unique<base::utils::xz::FileDataProvider>(source))
+        , m_spDataCollector(std::make_unique<base::utils::xz::VectorDataCollector>(dest))
         , m_threadCount(threadCount)
     {
     }
@@ -76,9 +76,9 @@ public:
      */
     XzHelper(const std::vector<uint8_t>& source,
              const std::filesystem::path& dest,
-             uint32_t threadCount = Xz::DEFAULT_THREAD_COUNT)
-        : m_spDataProvider(std::make_unique<Xz::VectorDataProvider>(source))
-        , m_spDataCollector(std::make_unique<Xz::FileDataCollector>(dest))
+             uint32_t threadCount = base::utils::xz::DEFAULT_THREAD_COUNT)
+        : m_spDataProvider(std::make_unique<base::utils::xz::VectorDataProvider>(source))
+        , m_spDataCollector(std::make_unique<base::utils::xz::FileDataCollector>(dest))
         , m_threadCount(threadCount)
     {
     }
@@ -92,9 +92,9 @@ public:
      */
     XzHelper(const std::vector<uint8_t>& source,
              std::vector<uint8_t>& dest,
-             uint32_t threadCount = Xz::DEFAULT_THREAD_COUNT)
-        : m_spDataProvider(std::make_unique<Xz::VectorDataProvider>(source))
-        , m_spDataCollector(std::make_unique<Xz::VectorDataCollector>(dest))
+             uint32_t threadCount = base::utils::xz::DEFAULT_THREAD_COUNT)
+        : m_spDataProvider(std::make_unique<base::utils::xz::VectorDataProvider>(source))
+        , m_spDataCollector(std::make_unique<base::utils::xz::VectorDataCollector>(dest))
         , m_threadCount(threadCount)
     {
     }
@@ -108,9 +108,9 @@ public:
      */
     XzHelper(const std::string& source,
              const std::filesystem::path& dest,
-             uint32_t threadCount = Xz::DEFAULT_THREAD_COUNT)
-        : m_spDataProvider(std::make_unique<Xz::StringDataProvider>(source))
-        , m_spDataCollector(std::make_unique<Xz::FileDataCollector>(dest))
+             uint32_t threadCount = base::utils::xz::DEFAULT_THREAD_COUNT)
+        : m_spDataProvider(std::make_unique<base::utils::xz::StringDataProvider>(source))
+        , m_spDataCollector(std::make_unique<base::utils::xz::FileDataCollector>(dest))
         , m_threadCount(threadCount)
     {
     }
@@ -122,9 +122,11 @@ public:
      * @param dest Vector for the output data
      * @param threadCount  Number of worker threads. 0 uses all the available threads.
      */
-    XzHelper(const std::string& source, std::vector<uint8_t>& dest, uint32_t threadCount = Xz::DEFAULT_THREAD_COUNT)
-        : m_spDataProvider(std::make_unique<Xz::StringDataProvider>(source))
-        , m_spDataCollector(std::make_unique<Xz::VectorDataCollector>(dest))
+    XzHelper(const std::string& source,
+             std::vector<uint8_t>& dest,
+             uint32_t threadCount = base::utils::xz::DEFAULT_THREAD_COUNT)
+        : m_spDataProvider(std::make_unique<base::utils::xz::StringDataProvider>(source))
+        , m_spDataCollector(std::make_unique<base::utils::xz::VectorDataCollector>(dest))
         , m_threadCount(threadCount)
     {
     }
@@ -135,9 +137,9 @@ public:
      * @param compressionPreset Compression level. A value from 0 to 9. Roughly, the higher the value the higher the
      * compression ratio, at the expense of slower times and more memory usage. Default preset is 9.
      */
-    void compress(uint32_t compressionPreset = Xz::DEFAULT_COMPRESSION_PRESET)
+    void compress(uint32_t compressionPreset = base::utils::xz::DEFAULT_COMPRESSION_PRESET)
     {
-        Xz::Wrapper xz(m_threadCount);
+        base::utils::xz::Wrapper xz(m_threadCount);
         xz.compress(*m_spDataProvider, *m_spDataCollector, compressionPreset);
     }
 
@@ -147,7 +149,7 @@ public:
      */
     void decompress()
     {
-        Xz::Wrapper xz(m_threadCount);
+        base::utils::xz::Wrapper xz(m_threadCount);
         xz.decompress(*m_spDataProvider, *m_spDataCollector);
     }
 };
