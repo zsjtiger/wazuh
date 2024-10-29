@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _FILE_DATA_PROVIDER_HPP
-#define _FILE_DATA_PROVIDER_HPP
+#ifndef _BASE_UTILS_FILE_DATA_PROVIDER_HPP
+#define _BASE_UTILS_FILE_DATA_PROVIDER_HPP
 
 #include <filesystem>
 #include <fstream>
@@ -73,4 +73,4 @@ public:
     }
 };
 } // namespace base::utils::xz
-#endif // _FILE_DATA_PROVIDER_HPP
+#endif // _BASE_UTILS_FILE_DATA_PROVIDER_HPP

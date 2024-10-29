@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _I_DATA_PROVIDER_HPP
-#define _I_DATA_PROVIDER_HPP
+#ifndef _BASE_UTILS_I_DATA_PROVIDER_HPP
+#define _BASE_UTILS_I_DATA_PROVIDER_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -54,4 +54,4 @@ public:
     virtual DataBlock getNextBlock() = 0;
 };
 } // namespace base::utils::xz
-#endif // _I_DATA_PROVIDER_HPP
+#endif // _BASE_UTILS_I_DATA_PROVIDER_HPP

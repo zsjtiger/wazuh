@@ -17,8 +17,8 @@
 #include <filesystem>
 #include <vector>
 
-#include "archive.h"
-#include "archive_entry.h"
+#include <archive.h>
+#include <archive_entry.h>
 
 template<typename F, typename G, F func1, G func2>
 struct Deleter

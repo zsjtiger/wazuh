@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _I_DATA_COLLECTOR_HPP
-#define _I_DATA_COLLECTOR_HPP
+#ifndef _BASE_UTILS_I_DATA_COLLECTOR_HPP
+#define _BASE_UTILS_I_DATA_COLLECTOR_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -56,4 +56,4 @@ public:
     virtual void dataReady(size_t unusedBufferLen) = 0;
 };
 } // namespace base::utils::xz
-#endif // _I_DATA_COLLECTOR_HPP
+#endif // _BASE_UTILS_I_DATA_COLLECTOR_HPP

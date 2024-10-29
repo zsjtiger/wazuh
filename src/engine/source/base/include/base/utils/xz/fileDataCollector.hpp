@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _FILE_DATA_COLLECTOR_HPP
-#define _FILE_DATA_COLLECTOR_HPP
+#ifndef _BASE_UTILS_FILE_DATA_COLLECTOR_HPP
+#define _BASE_UTILS_FILE_DATA_COLLECTOR_HPP
 
 #include <cstring>
 #include <filesystem>
@@ -78,4 +78,4 @@ public:
     }
 };
 } // namespace base::utils::xz
-#endif // _FILE_DATA_COLLECTOR_HPP
+#endif // _BASE_UTILS_FILE_DATA_COLLECTOR_HPP

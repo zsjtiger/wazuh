@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _STRING_DATA_PROVIDER_HPP
-#define _STRING_DATA_PROVIDER_HPP
+#ifndef _BASE_UTILS_STRING_DATA_PROVIDER_HPP
+#define _BASE_UTILS_STRING_DATA_PROVIDER_HPP
 
 #include <string>
 
@@ -57,4 +57,4 @@ public:
     }
 };
 } // namespace base::utils::xz
-#endif // _STRING_DATA_PROVIDER_HPP
+#endif // _BASE_UTILS_STRING_DATA_PROVIDER_HPP

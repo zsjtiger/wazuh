@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _XZ_WRAPPER
-#define _XZ_WRAPPER
+#ifndef _BASE_UTILS_WRAPPER_HPP
+#define _BASE_UTILS_WRAPPER_HPP
 
 #include <stdexcept>
 #include <string>
@@ -253,4 +253,4 @@ public:
 };
 
 } // namespace base::utils::xz
-#endif //_XZ_WRAPPER
+#endif //_BASE_UTILS_WRAPPER_HPP

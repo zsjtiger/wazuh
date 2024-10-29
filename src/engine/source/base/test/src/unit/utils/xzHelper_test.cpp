@@ -14,9 +14,10 @@
 #include <fstream>
 #include <vector>
 
-#include "base/utils/hashHelper.hpp"
-#include "base/utils/xzHelper.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
+
+#include <base/utils/hashHelper.hpp>
+#include <base/utils/xzHelper.hpp>
 
 const auto INPUT_PATH {std::filesystem::current_path() / "input_files" / "xzHelper"};
 const auto OUTPUT_PATH {INPUT_PATH / "tmp"};

@@ -12,8 +12,9 @@
 #include <filesystem>
 #include <fstream>
 
-#include "base/utils/archiveHelper.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
+
+#include <base/utils/archiveHelper.hpp>
 
 class ArchiveHelperTest : public ::testing::Test
 {

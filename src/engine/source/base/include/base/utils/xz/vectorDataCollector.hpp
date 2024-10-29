@@ -9,8 +9,8 @@
  * Foundation.
  */
 
-#ifndef _VECTOR_DATA_COLLECTOR_HPP
-#define _VECTOR_DATA_COLLECTOR_HPP
+#ifndef _BASE_UTILS_VECTOR_DATA_COLLECTOR_HPP
+#define _BASE_UTILS_VECTOR_DATA_COLLECTOR_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -70,4 +70,4 @@ public:
     }
 };
 } // namespace base::utils::xz
-#endif // _VECTOR_DATA_COLLECTOR_HPP
+#endif // _BASE_UTILS_VECTOR_DATA_COLLECTOR_HPP
