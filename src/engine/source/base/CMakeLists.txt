@@ -23,10 +23,14 @@ target_include_directories(base
     ${INC_DIR}/base
     ${SRC_DIR}
 )
+find_library(ARCHIVE_LIB archive PATHS ${CMAKE_SOURCE_DIR}/build/vcpkg_installed/x64-linux/lib/)
 target_link_libraries(base
     PUBLIC
     fmt::fmt-header-only
     spdlog::spdlog
+    PRIVATE
+    liblzma::liblzma
+    ${ARCHIVE_LIB}
 )
 
 # Tests
@@ -36,10 +40,13 @@ if(ENGINE_BUILD_TEST)
 set(TEST_DIR ${CMAKE_CURRENT_LIST_DIR}/test)
 set(TEST_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/test/src)
 set(UNIT_SRC_DIR ${TEST_SRC_DIR}/unit)
+set(INPUT_FILES ${UNIT_SRC_DIR}/utils/input_files)
 
 add_library(base_test INTERFACE)
 target_include_directories(base_test INTERFACE ${TEST_DIR}/include)
 add_library(base::test ALIAS base_test)
+
+file(COPY ${INPUT_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(base_utest
     ${UNIT_SRC_DIR}/stringUtils_test.cpp
@@ -50,6 +57,8 @@ add_executable(base_utest
     ${UNIT_SRC_DIR}/utils/wazuhProtocol/wazuhRequest_test.cpp
     ${UNIT_SRC_DIR}/utils/wazuhProtocol/wazuhResponse_test.cpp
     ${UNIT_SRC_DIR}/utils/timeUtils_test.cpp
+    ${UNIT_SRC_DIR}/utils/archiveHelper_test.cpp
+    ${UNIT_SRC_DIR}/utils/xzHelper_test.cpp
     ${UNIT_SRC_DIR}/utils/threadEventDispatcher_test.cpp
     ${UNIT_SRC_DIR}/parseEvent_test.cpp
     ${UNIT_SRC_DIR}/dotPath_test.cpp
@@ -72,6 +81,7 @@ target_link_libraries(base_utest
     base
     GTest::gtest_main
     RocksDB::rocksdb
+    CURL::libcurl
 )
 gtest_discover_tests(base_utest)
 

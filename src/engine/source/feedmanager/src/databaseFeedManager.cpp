@@ -33,6 +33,18 @@ DatabaseFeedManager::DatabaseFeedManager(std::shared_mutex& mutex)
                 std::filesystem::remove(TAR_DB_FILE);
             }
 
+            if (std::filesystem::exists(LEGACY_DB_PATH))
+            {
+                LOG_DEBUG("Removing existent {} folder.", LEGACY_DB_PATH);
+                std::filesystem::remove_all(LEGACY_DB_PATH);
+            }
+
+            if (std::filesystem::exists(CURRENT_DB_PATH))
+            {
+                LOG_DEBUG("Removing existent {} folder.", CURRENT_DB_PATH);
+                std::filesystem::remove_all(CURRENT_DB_PATH);
+            }
+
             LOG_DEBUG("Starting XZ file decompression");
             base::utils::XzHelper(std::filesystem::path(COMPRESSED_DB_PATH), std::filesystem::path(TAR_DB_FILE))
                 .decompress();
@@ -44,23 +56,11 @@ DatabaseFeedManager::DatabaseFeedManager(std::shared_mutex& mutex)
             std::vector<std::string> extractOnly;
             extractOnly.emplace_back(VD_DATABASE_PATH);
 
-            if (std::filesystem::exists(LEGACY_DB_PATH))
-            {
-                LOG_DEBUG("Removing existent {} folder.", LEGACY_DB_PATH);
-                std::filesystem::remove_all(LEGACY_DB_PATH);
-            }
-
             LOG_DEBUG("Starting TAR file decompression.");
             base::utils::ArchiveHelper::decompress(TAR_DB_FILE, false, DECOMPRESSED_DB_PATH, extractOnly);
 
             LOG_DEBUG("Finishing TAR file decompression. Removing {}.", TAR_DB_FILE);
             std::filesystem::remove(TAR_DB_FILE);
-
-            if (std::filesystem::exists(CURRENT_DB_PATH))
-            {
-                LOG_DEBUG("Removing existent {} folder.", CURRENT_DB_PATH);
-                std::filesystem::remove_all(CURRENT_DB_PATH);
-            }
 
             std::filesystem::rename(LEGACY_DB_PATH, CURRENT_DB_PATH);
         }

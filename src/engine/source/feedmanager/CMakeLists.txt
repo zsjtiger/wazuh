@@ -60,13 +60,9 @@ add_dependencies(database_feed compile_schemas)
 # /home/vagrant/wazuh-5.0.0/src/engine
 # ./src/engine/build/vcpkg_installed/x64-linux/lib/libarchive.a
 
-find_library(ARCHIVE_LIB archive PATHS ${CMAKE_SOURCE_DIR}/build/vcpkg_installed/x64-linux/lib/)
-
 target_link_libraries(database_feed
         flatbuffers::flatbuffers
         RocksDB::rocksdb
-        liblzma::liblzma
-        ${ARCHIVE_LIB}
         base
         )
 
