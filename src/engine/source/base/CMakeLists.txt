@@ -23,14 +23,13 @@ target_include_directories(base
     ${INC_DIR}/base
     ${SRC_DIR}
 )
-find_library(ARCHIVE_LIB archive PATHS ${CMAKE_SOURCE_DIR}/build/vcpkg_installed/x64-linux/lib/)
 target_link_libraries(base
     PUBLIC
     fmt::fmt-header-only
     spdlog::spdlog
     PRIVATE
     liblzma::liblzma
-    ${ARCHIVE_LIB}
+    LibArchive::LibArchive
 )
 
 # Tests

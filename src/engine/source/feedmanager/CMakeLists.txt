@@ -57,8 +57,6 @@ add_library(database_feed STATIC
 target_include_directories(database_feed PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_dependencies(database_feed compile_schemas)
-# /home/vagrant/wazuh-5.0.0/src/engine
-# ./src/engine/build/vcpkg_installed/x64-linux/lib/libarchive.a
 
 target_link_libraries(database_feed
         flatbuffers::flatbuffers
