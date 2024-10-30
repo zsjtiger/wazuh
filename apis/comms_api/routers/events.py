@@ -35,7 +35,7 @@ async def post_stateful_events(request: Request, events: StatefulEvents) -> Stat
     except WazuhError as exc:
         raise HTTPError(message=exc.message, status_code=status.HTTP_400_BAD_REQUEST)
 
-
+# TODO(26356) - Timeout difference between some endpoints - WHY and should be added to the config?
 @timeout(10)
 async def post_stateless_events(events: StatelessEvents) -> Response:
     """Post stateless events handler.

@@ -39,8 +39,9 @@ from wazuh.core.exception import WazuhCommsAPIError
 from wazuh.core.batcher.config import BatcherConfig
 from wazuh.core.batcher.mux_demux import MuxDemuxQueue, MuxDemuxManager
 
-# TODO(#25121) - Delete after centralized configuration
-from wazuh.core.batcher.config import BATCHER_MAX_ELEMENTS, BATCHER_MAX_SIZE, BATCHER_MAX_TIME_SECONDS
+from wazuh.core.config.client import CentralizedConfig
+from wazuh.core.config.models.logging import LoggingWithRotationConfig
+from wazuh.core.config.models.comms_api import CommsAPIConfig
 
 MAIN_PROCESS = 'wazuh-comms-apid'
 
@@ -76,13 +77,15 @@ def create_app(batcher_queue: MuxDemuxQueue, commands_manager: CommandsManager) 
     return app
 
 
-def setup_logging(foreground_mode: bool) -> dict:
+def setup_logging(foreground_mode: bool, logging_config: LoggingWithRotationConfig) -> dict:
     """Set up the logging module and returns the configuration used.
 
     Parameters
     ----------
     foreground_mode : bool
         Whether to execute the script in foreground mode or not.
+    logging_config :  LoggingWithRotationConfig
+        Logger configuration
 
     Returns
     -------
@@ -90,7 +93,7 @@ def setup_logging(foreground_mode: bool) -> dict:
         Logging configuration dictionary.
     """
     log_config_dict = set_logging(log_filepath=COMMS_API_LOG_PATH,
-                                  log_level='INFO',
+                                  logging_config=logging_config,
                                   foreground_mode=foreground_mode)
 
     for handler in log_config_dict['handlers'].values():
@@ -149,7 +152,7 @@ def post_worker_init(worker):
     atexit.unregister(_exit_function)
 
 
-def get_gunicorn_options(pid: int, foreground_mode: bool, log_config_dict: dict) -> dict:
+def get_gunicorn_options(pid: int, foreground_mode: bool, log_config_dict: dict, config: CommsAPIConfig) -> dict:
     """Get the gunicorn app configuration options.
 
     Parameters
@@ -160,32 +163,32 @@ def get_gunicorn_options(pid: int, foreground_mode: bool, log_config_dict: dict)
         Whether to execute the script in foreground mode or not.
     log_config_dict : dict
         Logging configuration dictionary.
+    config: CommsAPIConfig
+        Comms API configuration object.
 
     Returns
     -------
     dict
         Gunicorn configuration options.
     """
-    # TODO(#25121): get values from the configuration
-    keyfile = '/var/ossec/api/configuration/ssl/server.key'
-    certfile = '/var/ossec/api/configuration/ssl/server.crt'
-    configure_ssl(keyfile, certfile)
+    configure_ssl(config.ssl.key, config.ssl.cert)
 
     pidfile = os.path.join(common.WAZUH_PATH, common.OS_PIDFILE_PATH, f'{MAIN_PROCESS}-{pid}.pid')
 
+    #TODO(26356) - Aks Gasti for SSL_Version
     return {
         'proc_name': MAIN_PROCESS,
         'pidfile': pidfile,
         'daemon': not foreground_mode,
         'bind': f'{args.host}:{args.port}',
-        'workers': 4,
+        'workers': config.workers,
         'worker_class': 'uvicorn.workers.UvicornWorker',
         'preload_app': True,
-        'keyfile': keyfile,
-        'certfile': certfile,
-        'ca_certs': '/etc/ssl/certs/ca-certificates.crt',
+        'keyfile': config.ssl.key,
+        'certfile': config.ssl.cert,
+        'ca_certs': config.ssl.ca,
         'ssl_context': ssl_context,
-        'ciphers': '',
+        'ciphers': config.ssl.ssl_ciphers,
         'logconfig_dict': log_config_dict,
         'user': os.getuid(),
         'post_worker_init': post_worker_init,
@@ -291,13 +294,15 @@ if __name__ == '__main__':
     # The bash script that starts all services first executes them using the `-t` flag to check the configuration.
     # We don't have a configuration yet, but it will be added in the future, so we just exit successfully for now.
     #
-    # TODO(#25121): check configuration
+    # TODO(#25121): check configuration - handle error - handle master/worker case (only master now)
+    CentralizedConfig.load()
     if args.test_config:
         exit(0)
+    comms_api_config = CentralizedConfig.get_comms_api_config()
 
     utils.clean_pid_files(MAIN_PROCESS)
     
-    log_config_dict = setup_logging(args.foreground)
+    log_config_dict = setup_logging(args.foreground, comms_api_config.logging)
     logger = logging.getLogger('wazuh-comms-api')
 
     if args.foreground:
@@ -312,10 +317,11 @@ if __name__ == '__main__':
     else:
         logger.info('Starting API as root')
 
+    #TODO(26356) - Should I use the new config model?
     batcher_config = BatcherConfig(
-        max_elements=BATCHER_MAX_ELEMENTS,
-        max_size=BATCHER_MAX_SIZE,
-        max_time_seconds=BATCHER_MAX_TIME_SECONDS
+        max_elements=comms_api_config.batcher.max_elements,
+        max_size=comms_api_config.batcher.max_size,
+        max_time_seconds=comms_api_config.batcher.wait_time
     )
     mux_demux_manager, batcher_process = create_batcher_process(config=batcher_config)
 
@@ -337,7 +343,7 @@ if __name__ == '__main__':
     
     try:
         app = create_app(mux_demux_manager.get_queue(), commands_manager)
-        options = get_gunicorn_options(pid, args.foreground, log_config_dict)
+        options = get_gunicorn_options(pid, args.foreground, log_config_dict, comms_api_config)
         StandaloneApplication(app, options).run()
     except WazuhCommsAPIError as e:
         logger.error(f'Error when trying to start the Wazuh Communications API. {e}')
