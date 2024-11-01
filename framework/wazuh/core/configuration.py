@@ -72,8 +72,7 @@ CONF_SECTIONS = MappingProxyType({
     },
     'ruleset': {
         'type': 'merge',
-        'list_options': ['include', 'rule', 'rule_dir', 'decoder', 'decoder_dir', 'list', 'rule_exclude',
-                         'decoder_exclude']
+        'list_options': ['include', 'rule', 'rule_dir', 'rule_exclude']
     },
     'syscheck': {
         'type': 'merge',
@@ -401,7 +400,7 @@ def get_ossec_conf(section: str = None, field: str = None, conf_file: str = comm
             else:
                 field_data = data[section][field]
                 if distinct and section == 'ruleset':
-                    if field in ('decoder_dir', 'rule_dir'):
+                    if field == 'rule_dir':
                         # Remove duplicates
                         values = []
                         [values.append(x) for x in field_data if x not in values]
