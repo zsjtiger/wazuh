@@ -378,7 +378,7 @@ def get_values(o: object, fields: list = None) -> list:
     strings = []
 
     try:
-        obj = o.to_dict()  # Rule, Agent...
+        obj = o.to_dict()  # Agent...
     except:
         obj = o
 
@@ -652,39 +652,6 @@ def chown_r(file_path: str, uid: int, gid: int):
                 chown(item_path, uid, gid)
             elif path.isdir(item_path):
                 chown_r(item_path, uid, gid)
-
-
-def delete_wazuh_file(full_path: str) -> bool:
-    """Delete a Wazuh file.
-
-    Parameters
-    ----------
-    full_path : str
-        Full path of the file to delete.
-
-    Raises
-    ------
-    WazuhError(1906)
-        File does not exist.
-    WazuhError(1907)
-        File could not be deleted.
-
-    Returns
-    -------
-    bool
-        True if success.
-    """
-    if not full_path.startswith(common.WAZUH_PATH) or '..' in full_path:
-        raise WazuhError(1907)
-
-    if path.exists(full_path):
-        try:
-            remove(full_path)
-            return True
-        except IOError:
-            raise WazuhError(1907)
-    else:
-        raise WazuhError(1906)
 
 
 def safe_move(source: str, target: str, ownership: tuple = None, time: tuple = None, permissions: int = None):
@@ -2102,50 +2069,6 @@ class WazuhDBQueryGroupBy(WazuhDBQuery):
         self.select = self.select & self.filter_fields['fields']
 
 
-@common.context_cached('system_rules')
-def expand_rules() -> set:
-    """Return all ruleset rule files in the system.
-
-    Returns
-    -------
-    set
-        Rule files.
-    """
-    folders = [common.RULES_PATH, common.USER_RULES_PATH]
-    rules = set()
-    for folder in folders:
-        for _, _, files in walk(folder):
-            for f in filter(lambda x: x.endswith(common.RULES_EXTENSION), files):
-                rules.add(f)
-
-    return rules
-
-
-def add_dynamic_detail(detail: str, value: str, attribs: dict, details: dict):
-    """Add a detail with attributes (i.e. regex with negate or type).
-
-    Parameters
-    ----------
-    detail : str
-        Name of the detail.
-    value : str
-        Detail value.
-    attribs : dict
-        Dictionary with the XML attributes.
-    details : dict
-        Dictionary with all the current details.
-    """
-    if detail in details:
-        new_pattern = details[detail]['pattern'] + value
-        details[detail].clear()
-        details[detail]['pattern'] = new_pattern
-    else:
-        details[detail] = dict()
-        details[detail]['pattern'] = value
-
-    details[detail].update(attribs)
-
-
 def validate_wazuh_xml(content: str, config_file: bool = False):
     """Validate Wazuh XML files (rules and ossec.conf)
 
@@ -2196,99 +2119,6 @@ def validate_wazuh_xml(content: str, config_file: bool = False):
         raise e
     except Exception as e:
         raise WazuhError(1113, str(e))
-
-
-def upload_file(content: str, file_path: str, check_xml_formula_values: bool = True):
-    """Upload files (rules and ossec.conf).
-
-    Parameters
-    ----------
-    content: str
-        Content of the XML file.
-    file_path: str
-        Destination of the new XML file.
-    check_xml_formula_values: bool
-        Check formula values in the resulting XML if true.
-
-    Raises
-    ------
-    WazuhInternalError(1005)
-        Error reading file.
-    WazuhInternalError(1016)
-        Error moving file.
-    WazuhError(1006)
-        Permision error accessing File or Directory.
-
-    Returns
-    -------
-    WazuhResult
-        Confirmation message.
-    """
-
-    def escape_formula_values(xml_string):
-        """Prepend with a single quote possible formula injections."""
-        formula_characters = ('=', '+', '-', '@')
-        et = fromstring(f'<root>{xml_string}</root>')
-        full_preprend, beginning_preprend = list(), list()
-        for node in et.iter():
-            if node.tag and node.tag.startswith(formula_characters):
-                full_preprend.append(node.tag)
-            if node.text and node.text.startswith(formula_characters) and ("'" in node.text or '"' in node.text):
-                beginning_preprend.append(node.text)
-
-        for text in full_preprend:
-            xml_string = re.sub(f'<{re.escape(text)}>', f"<'{text}'>", xml_string)
-            xml_string = re.sub(f'</{re.escape(text)}>', f"</'{text}'>", xml_string)
-
-        for text in beginning_preprend:
-            xml_string = re.sub(f'>{re.escape(text)}<', f">'{text}<", xml_string)
-
-        return xml_string
-
-    # Path of temporary files for parsing xml input
-    handle, tmp_file_path = tempfile.mkstemp(prefix='api_tmp_file_', suffix='.tmp', dir=common.OSSEC_TMP_PATH)
-    try:
-        with open(handle, 'w') as tmp_file:
-            final_file = escape_formula_values(content) if check_xml_formula_values else content
-            tmp_file.write(final_file)
-        chmod(tmp_file_path, 0o660)
-    except IOError as exc:
-        raise WazuhInternalError(1005) from exc
-
-    # Move temporary file to group folder
-    try:
-        new_conf_path = path.join(common.WAZUH_PATH, file_path)
-        safe_move(tmp_file_path, new_conf_path, ownership=(common.wazuh_uid(), common.wazuh_gid()), permissions=0o660)
-    except PermissionError as exc:
-        raise WazuhError(1006) from exc
-    except Error as exc:
-        raise WazuhInternalError(1016) from exc
-
-    return results.WazuhResult({'message': 'File was successfully updated'})
-
-
-def delete_file_with_backup(backup_file: str, abs_path: str, delete_function: callable):
-    """Try to delete a file doing a backup beforehand.
-
-    Parameters
-    ----------
-    backup_file : str
-        Name of the backup file.
-    abs_path : str
-        Absolute path of the file to delete.
-    delete_function : callable
-        Function that will be used to delete the file.
-
-    Raises
-    ------
-    WazuhError(1019)
-        If there is any `IOError` while doing the backup.
-    """
-    try:
-        full_copy(abs_path, backup_file)
-    except IOError:
-        raise WazuhError(1019)
-    delete_function(filename=path.basename(abs_path))
 
 
 def replace_in_comments(original_content, to_be_replaced, replacement):

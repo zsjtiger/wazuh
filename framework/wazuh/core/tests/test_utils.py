@@ -31,7 +31,7 @@ with patch('wazuh.core.common.wazuh_uid'):
 # all necessary params
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-test_files_path = os.path.join(test_data_path, 'utils')
+test_files_path = os.path.join(test_data_path, 'test_load_wazuh_xml')
 
 # input data for testing q filter
 input_array = [
@@ -153,8 +153,6 @@ mock_nested_dict = {
 }
 
 test_xml = '''
-<!-- Local rules -->
-
 <!-- Modify it at your will. -->
 
 <!-- Example -->
@@ -517,33 +515,6 @@ def test_chown_r(mock_chown):
         mock_chown.assert_any_call(os.path.join(tmp_dirname, tmp_file.name), 'test_user', 'test_group')
 
 
-@patch('wazuh.core.utils.common.WAZUH_PATH', new='/test/path')
-@patch('wazuh.core.utils.path.exists', return_value=True)
-@patch('wazuh.core.utils.remove')
-def test_delete_wazuh_file(mock_remove, mock_exists):
-    """Check delete_file calls functions with expected params"""
-    assert utils.delete_wazuh_file('/test/path/etc/file')
-    mock_remove.assert_called_once_with('/test/path/etc/file')
-
-
-@patch('wazuh.core.utils.common.WAZUH_PATH', new='/test/path')
-def test_delete_wazuh_file_ko():
-    """Check delete_file calls functions with expected params"""
-    with pytest.raises(utils.WazuhError, match=r'\b1907\b'):
-        utils.delete_wazuh_file('/test/different_path/etc/file')
-
-    with pytest.raises(utils.WazuhError, match=r'\b1907\b'):
-        utils.delete_wazuh_file('/test/path/file/../../home')
-
-    with patch('wazuh.core.utils.path.exists', return_value=False):
-        with pytest.raises(utils.WazuhError, match=r'\b1906\b'):
-            utils.delete_wazuh_file('/test/path/etc/file')
-
-    with patch('wazuh.core.utils.path.exists', return_value=True):
-        with pytest.raises(utils.WazuhError, match=r'\b1907\b'):
-            utils.delete_wazuh_file('/test/path/etc/file')
-
-
 @pytest.mark.parametrize('ownership, time, permissions',
                          [((1000, 1000), None, None),
                           ((1000, 1000), (12345, 12345), None),
@@ -716,9 +687,9 @@ def test_load_wazuh_xml():
         if len(e1) != len(e2): return False
         return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
 
-    for rule_file in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/test_load_wazuh_xml')):
+    for file in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/test_load_wazuh_xml')):
         path = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/test_load_wazuh_xml'),
-                            rule_file)
+                            file)
         original = parse(path).getroot()
         result = utils.load_wazuh_xml(path)
 
@@ -1901,22 +1872,6 @@ def test_select_array(select, required_fields, expected_result):
         assert e.code == 1724
 
 
-@pytest.mark.parametrize('detail, value, attribs, details', [
-    ('new', '4', {'attrib': 'attrib_value'}, {'actual': '3'}),
-    ('actual', '4', {'new_attrib': 'attrib_value', 'new_attrib2': 'whatever'}, {'actual': {'pattern': '3'}}),
-])
-def test_add_dynamic_detail(detail, value, attribs, details):
-    """Test add_dynamic_detail core rule function."""
-    utils.add_dynamic_detail(detail, value, attribs, details)
-    assert detail in details.keys()
-    if detail == next(iter(details.keys())):
-        assert details[detail]['pattern'].endswith(value)
-    else:
-        assert details[detail]['pattern'] == value
-    for key, value in attribs.items():
-        assert details[detail][key] == value
-
-
 @patch('wazuh.core.utils.check_wazuh_limits_unchanged')
 @patch('wazuh.core.utils.check_remote_commands')
 @patch('wazuh.core.utils.check_agents_allow_higher_versions')
@@ -1927,7 +1882,7 @@ def test_validate_wazuh_xml(mock_check_indexer, mock_virus_total_integration,
                             mock_agents_versions, mock_remote_commands, mock_unchanged_limits):
     """Test validate_wazuh_xml method works and methods inside are called with expected parameters"""
 
-    with open(os.path.join(test_files_path, 'test_rules.xml')) as f:
+    with open(os.path.join(test_files_path, 'agent_new_line_query.conf')) as f:
         xml_file = f.read()
 
     m = mock_open(read_data=xml_file)
@@ -1966,40 +1921,12 @@ def test_validate_wazuh_xml_ko(effect, expected_exception):
             utils.validate_wazuh_xml(input_file)
 
 
-@patch('wazuh.core.utils.full_copy')
-def test_delete_file_with_backup(mock_full_copy):
-    """Test delete_file_with_backup function."""
-    backup_file = 'backup'
-    abs_path = 'testing/dir/subdir/file'
-    delete_function = MagicMock()
-
-    utils.delete_file_with_backup(backup_file, abs_path, delete_function)
-
-    mock_full_copy.assert_called_with(abs_path, backup_file)
-    delete_function.assert_called_once_with(filename=os.path.basename(abs_path))
-
-
-@patch('wazuh.core.utils.full_copy', side_effect=IOError)
-def test_delete_file_with_backup_ko(mock_copyfile):
-    """Test delete_file_with_backup function exceptions."""
-    with pytest.raises(utils.WazuhError, match='.* 1019 .*'):
-        utils.delete_file_with_backup('test', 'test', str)
-
-
 def test_to_relative_path():
     """Test to_relative_path function."""
     path = 'etc/ossec.conf'
     assert utils.to_relative_path(os.path.join(WAZUH_PATH, path)) == path
 
     assert utils.to_relative_path(path, prefix='etc') == os.path.basename(path)
-
-
-@patch('wazuh.core.utils.common.RULES_PATH', new=test_files_path)
-@patch('wazuh.core.utils.common.USER_RULES_PATH', new=test_files_path)
-def test_expand_rules():
-    rules = utils.expand_rules()
-    assert rules == set(map(os.path.basename, glob.glob(os.path.join(test_files_path,
-                                                                     f'*{utils.common.RULES_EXTENSION}'))))
 
 
 def test_full_copy():
@@ -2210,104 +2137,6 @@ def test_check_indexer(new_conf, original_conf, indexer_changed, indexer_allowed
         elif indexer_changed:
             with pytest.raises(exception.WazuhError, match=".* 1127 .*"):
                 utils.check_indexer(new_conf, original_conf)
-
-
-@pytest.mark.parametrize(
-    'chk_xml, content', [
-        # basic test case
-        (False, "Test"),
-        # check_xml test case
-        (True, "<Test>'+Tes't</Test>")]
-)
-@patch('wazuh.core.utils.tempfile.mkstemp',
-        return_value=('handle', os.path.join(OSSEC_TMP_PATH, 'file.tmp')))
-@patch('wazuh.core.utils.chmod')
-@patch('wazuh.core.common.wazuh_gid')
-@patch('wazuh.core.common.wazuh_uid')
-def test_upload_file(mock_uid, mock_gid, 
-                     mock_chmod, mock_mks,
-                     chk_xml, content):
-    """Test upload_file function.
-    
-    Parameters
-    ----------
-    mock_uid: Mock
-        mock of the wazuh.core.common.wazuh_uid function.
-    mock_gid: Mock
-        mock of the wazuh.core.common.wazuh_gid function.
-    mock_chmod: Mock
-        mock of the wazuh.core.utils.chmod function.
-    mock_mks
-        Mock of the wazuh.core.utils.tempfile.mkstemp function.
-    chk_xml: bool
-        check_xml_formula_value parameter passed to uploda_file.
-    content: str
-        content parameter passed to upload_file.
-    """
-    filename = "file.xml"
-    mko = mock_open()
-    handle = mko()
-
-    with patch('wazuh.core.utils.open', mko):
-        with patch('wazuh.core.utils.safe_move') as mock_safe_move:
-            result = utils.upload_file(content, file_path=filename,
-                                        check_xml_formula_values=chk_xml)
-            assert isinstance(result, WazuhResult)
-            handle.write.assert_called_once_with(content)
-            tmp_path = os.path.join(OSSEC_TMP_PATH, 'file.tmp')
-            file_path = os.path.join(WAZUH_PATH, filename)
-            mock_safe_move.assert_called_once_with(tmp_path, file_path,
-                                                    ownership=(mock_uid(), mock_gid()),
-                                                    permissions=0o660)
-
-
-@pytest.mark.parametrize(
-    'sm_side_effect, w_side_effect, upload_error', [
-        # IOError exception raised writing file
-        (None, True, (utils.WazuhInternalError, 1005)),
-        # safe_move raises an Error()
-        (Error(), False, (utils.WazuhInternalError, 1016)),
-        # safe_move raises a PermissionError()
-        (PermissionError(), False, (utils.WazuhError, 1006))]
-)
-@patch('wazuh.core.utils.tempfile.mkstemp',
-        return_value=('handle', os.path.join(OSSEC_TMP_PATH, 'file.tmp')))
-@patch('wazuh.core.utils.chmod')
-@patch('wazuh.core.common.wazuh_gid')
-@patch('wazuh.core.common.wazuh_uid')
-def test_upload_file_ko(mock_uid, mock_gid, mock_chmod, mock_mks,
-                     sm_side_effect, w_side_effect, upload_error):
-    """
-    Parameters
-    ----------
-    mock_uid : Mock
-        mock of the wazuh.core.common.wazuh_uid function.
-    mock_gid : Mock
-        mock of the wazuh.core.common.wazuh_gid function.
-    mock_chmod: Mock
-        mock of the wazuh.core.utils.chmod function.
-    mock_mks : Mock
-        Mock of the wazuh.core.utils.tempfile.mkstemp function.
-    sm_side_effect : Exception
-        Exception to raise in the safe_move mock as side_effect.
-    w_side_effect : bool
-        When this parameter is True, file.write function raises an IOError
-        Exception when called.
-    upload_error : tuple[ExceptionType, int]
-        The function checks if the upload_file function raises the ExceptionType
-        defined in the index 0 with the error_code defined in the index 1 of
-        the tuple.
-    """
-    filename = "file.xml"
-    mko = mock_open()
-    handle = mko()
-    if w_side_effect:
-        handle.write.side_effect = IOError()
-
-    with patch('wazuh.core.utils.open', mko):
-        with patch('wazuh.core.utils.safe_move', side_effect=sm_side_effect) as mock_safe_move:
-            with pytest.raises(upload_error[0], match=rf'\b{upload_error[1]}\b'):
-                utils.upload_file("test", file_path=filename)
 
 
 @pytest.mark.parametrize("new_conf", [
