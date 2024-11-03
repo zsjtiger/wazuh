@@ -299,20 +299,15 @@ def main():
     if os.path.exists(f'{common.WAZUH_PATH}/logs/cluster.log'):
         os.chown(f'{common.WAZUH_PATH}/logs/cluster.log', common.wazuh_uid(), common.wazuh_gid())
         os.chmod(f'{common.WAZUH_PATH}/logs/cluster.log', 0o660)
-
     try:
         server_config = CentralizedConfig.get_server_config()
     except Exception as e:
         main_logger.error(e)
         sys.exit(1)
 
-    #TODO(26356) - Delete this parameter that isn't used
-    if args.test_config:
-        sys.exit(0)
 
     # Clean cluster files from previous executions
     wazuh.core.cluster.cluster.clean_up()
-
     # Check for unused PID files
     clean_pid_files(CLUSTER_DAEMON_NAME)
 
@@ -330,15 +325,18 @@ def main():
     if args.foreground:
         print(f"Starting cluster in foreground (pid: {cluster_pid})")
 
-    if server_config.node.type == 'master':
-        main_function = master_main
+    try:
+        if server_config.node.type == 'master':
+            main_function = master_main
 
-        # Generate JWT signing key pair if it doesn't exist 
-        if not keypair_exists():
-            main_logger.info('Generating JWT signing key pair')
-            generate_keypair()
-    else:
-        main_function = worker_main
+            # Generate JWT signing key pair if it doesn't exist
+            if not keypair_exists():
+                main_logger.info('Generating JWT signing key pair')
+                generate_keypair()
+        else:
+            main_function = worker_main
+    except Exception as e:
+        main_logger.error(f"Unhandled exception: {e}")
 
     try:
         start_daemons(args.foreground, args.root)
