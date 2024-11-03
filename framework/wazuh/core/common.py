@@ -230,9 +230,11 @@ ACTIVE_CONFIG_VERSION = 'Wazuh v3.7.0'
 
 
 # ================================================ Wazuh path - Config =================================================
-AR_CONF = os.path.join(WAZUH_PATH, 'etc', 'shared', 'ar.conf')
-CLIENT_KEYS = os.path.join(WAZUH_PATH, 'etc', 'client.keys')
-SHARED_PATH = os.path.join(WAZUH_PATH, 'etc', 'shared')
+WAZUH_CONFIG_PATH = os.path.join(WAZUH_PATH, 'etc')
+WAZUH_SERVER_YML = os.path.join(WAZUH_PATH, 'wazuh-server.yml')
+AR_CONF = os.path.join(WAZUH_CONFIG_PATH, 'shared', 'ar.conf')
+CLIENT_KEYS = os.path.join(WAZUH_CONFIG_PATH, 'client.keys')
+SHARED_PATH = os.path.join(WAZUH_CONFIG_PATH, 'shared')
 
 
 # ================================================= Wazuh path - Misc ==================================================
