@@ -8,10 +8,7 @@ from wazuh.core import common
 
 API_PATH = os.path.join(common.WAZUH_PATH, 'api')
 CONFIG_PATH = os.path.join(API_PATH, 'configuration')
-CONFIG_FILE_PATH = os.path.join(CONFIG_PATH, 'api.yaml')
-RELATIVE_CONFIG_FILE_PATH = os.path.relpath(CONFIG_FILE_PATH, common.WAZUH_PATH)
 SECURITY_PATH = os.path.join(CONFIG_PATH, 'security')
-SECURITY_CONFIG_PATH = os.path.join(SECURITY_PATH, 'security.yaml')
 RELATIVE_SECURITY_PATH = os.path.relpath(SECURITY_PATH, common.WAZUH_PATH)
 BASE_LOG_PATH = os.path.join(common.WAZUH_PATH, 'logs')
 API_LOG_PATH = os.path.join(BASE_LOG_PATH, 'api')

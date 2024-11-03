@@ -475,7 +475,7 @@ class WorkerHandler(client.AbstractClient, c_common.WazuhCommon):
         # Once files are deleted, check and remove subdirectories which are now empty, as specified in cluster.json.
         file_config = server_config.get_internal_config().get_dir_config(data['cluster_item_key'])
         if file_config is None:
-            raise Exception(f'No dir in internal configuration with name {data['cluster_item_key']}')
+            raise Exception(f'No dir in internal configuration with name {data["cluster_item_key"]}')
 
         directories_to_check = set(os.path.dirname(f) for f, data in ko_files['extra'].items() if file_config.remove_subdirs_if_empty)
         for directory in directories_to_check:
@@ -527,7 +527,7 @@ class Worker(client.AbstractClientManager):
         self.task_pool = kwargs.pop('task_pool')
         super().__init__(**kwargs, tag="Worker")
         self.version = metadata.__version__
-        self.node_type = self.configuration['node_type']
+        self.node_type = self.server_config.node.type
         self.handler_class = WorkerHandler
         self.extra_args = {'version': self.version, 'node_type': self.node_type}
         self.dapi = dapi.APIRequestQueue(server=self)
@@ -553,4 +553,4 @@ class Worker(client.AbstractClientManager):
         dict
             Basic node information.
         """
-        return {'type': self.configuration['node_type'], 'node': self.configuration['node_name']}
+        return {'type': self.server_config.node.type, 'node': self.server_config.node.name}

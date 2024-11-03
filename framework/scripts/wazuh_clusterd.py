@@ -179,7 +179,6 @@ async def master_main(args: argparse.Namespace, server_config: ServerConfig, log
         Cluster logger.
     """
     from wazuh.core.cluster import local_server, master
-    from wazuh.core.cluster.hap_helper.hap_helper import HAPHelper
 
     cluster_utils.context_tag.set('Master')
 
@@ -282,9 +281,10 @@ def get_script_arguments() -> argparse.Namespace:
                         dest='debug_level')
     parser.add_argument('-V', help="Print version", action='store_true', dest="version")
     parser.add_argument('-r', help="Run as root", action='store_true', dest='root')
+    #TODO(26356) - Delete this parameter that isn't used
     parser.add_argument('-t', help="Test configuration", action='store_true', dest='test_config')
-    parser.add_argument('-c', help="Configuration file to use", type=str, metavar='config', dest='config_file',
-                        default=common.OSSEC_CONF)
+    #parser.add_argument('-c', help="Configuration file to use", type=str, metavar='config', dest='config_file',
+                        #default=common.OSSEC_CONF)
 
     return parser
 
@@ -306,6 +306,7 @@ def main():
         main_logger.error(e)
         sys.exit(1)
 
+    #TODO(26356) - Delete this parameter that isn't used
     if args.test_config:
         sys.exit(0)
 
@@ -356,7 +357,7 @@ def main():
 
 if __name__ == '__main__':
     import wazuh.core.cluster.utils as cluster_utils
-    from wazuh.core import common, configuration, pyDaemonModule
+    from wazuh.core import common, pyDaemonModule
 
     original_sig_handler = signal.signal(signal.SIGTERM, exit_handler)
 

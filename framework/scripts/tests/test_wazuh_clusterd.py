@@ -397,9 +397,8 @@ def test_get_script_arguments(argument_parser_mock):
                   dest='debug_level'),
              call('-V', help='Print version', action='store_true', dest='version'),
              call('-r', help='Run as root', action='store_true', dest='root'),
-             call('-t', help='Test configuration', action='store_true', dest='test_config'),
-             call('-c', help='Configuration file to use', type=str, metavar='config', dest='config_file',
-                  default=common.OSSEC_CONF)])
+             call('-t', help='Test configuration', action='store_true', dest='test_config')]
+        )
 
 
 @patch('scripts.wazuh_clusterd.sys.exit', side_effect=sys.exit)
