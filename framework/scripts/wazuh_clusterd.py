@@ -14,6 +14,7 @@ import sys
 from typing import List
 
 from wazuh.core.common import WAZUH_PATH
+from wazuh.core.config.client import CentralizedConfig
 from wazuh.core.utils import clean_pid_files
 from wazuh.core.wlogging import WazuhLogger
 from wazuh.core.config.models.server import ServerConfig
@@ -172,8 +173,6 @@ async def master_main(args: argparse.Namespace, server_config: ServerConfig, log
     ----------
     args : argparse.Namespace
         Script arguments.
-    cluster_config : dict
-        Cluster configuration.
     server_config : ServerConfig
         Server configuration.
     logger : WazuhLogger
@@ -368,7 +367,7 @@ if __name__ == '__main__':
 
     # Set logger
     try:
-        debug_mode_ = configuration.get_internal_options_value('wazuh_clusterd', 'debug', 2, 0) or args.debug_level
+        debug_mode_ = CentralizedConfig.get_server_config().logging.get_level_value()
     except Exception:
         debug_mode_ = 0
 
